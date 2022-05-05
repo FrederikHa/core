@@ -57,6 +57,7 @@ public class Level implements IndexedGraph<Tile> {
 
         setRandomEnd();
         setRandomStart();
+        
         // Generate tile lookup array while initializing
         generateTilesCache();
     }

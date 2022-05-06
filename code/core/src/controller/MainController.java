@@ -93,6 +93,10 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         this.batch = batch;
     }
 
+    public SpriteBatch getSpriteBatch() {
+        return batch;
+    }
+
     public void setHudBatch(SpriteBatch batch) {
         this.hudBatch = batch;
     }

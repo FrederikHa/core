@@ -37,16 +37,29 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
     /** Generates the level */
     protected IGenerator generator;
 
-    private boolean doFirstFrame = true;
+    private boolean doFirstFocus = true;
 
     // --------------------------- OWN IMPLEMENTATION ---------------------------
+
     protected abstract void setup();
+
+    protected abstract void gainFocus();
 
     protected abstract void beginFrame();
 
     protected abstract void endFrame();
 
+    protected abstract void loseFocus();
+
     // --------------------------- END OWN IMPLEMENTATION ------------------------
+
+    @Override
+    public final void show() {
+        if (doFirstFocus) {
+            firstFocus();
+        }
+        gainFocus();
+    }
 
     /**
      * Main game loop. Redraws the dungeon and calls the own implementation (beginFrame, endFrame
@@ -56,10 +69,6 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
      */
     @Override
     public final void render(float delta) {
-        if (doFirstFrame) {
-            firstFrame();
-        }
-
         // clears the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
@@ -73,8 +82,8 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         endFrame();
     }
 
-    private void firstFrame() {
-        doFirstFrame = false;
+    private void firstFocus() {
+        doFirstFocus = false;
         entityController = new EntityController();
         setupCameras();
         painter = new Painter(camera);
@@ -89,6 +98,21 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         setup();
     }
 
+    @Override
+    public final void resume() {
+        show();
+    }
+
+    @Override
+    public final void pause() {
+        hide();
+    }
+
+    @Override
+    public final void hide() {
+        loseFocus();
+    }
+
     public void setSpriteBatch(SpriteBatch batch) {
         this.batch = batch;
     }
@@ -99,6 +123,10 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
 
     public void setHudBatch(SpriteBatch batch) {
         this.hudBatch = batch;
+    }
+
+    public SpriteBatch getHudBatch() {
+        return hudBatch;
     }
 
     private void setupCameras() {

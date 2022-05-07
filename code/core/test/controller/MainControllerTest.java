@@ -65,9 +65,12 @@ class MainControllerTest {
         Mockito.verify(controller).setSpriteBatch(batch);
         Mockito.verifyNoMoreInteractions(controller, batch);
 
+        controller.show();
+        Mockito.verify(controller).show();
+        Mockito.verify(controller).setup();
+
         controller.render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
-        Mockito.verify(controller).setup();
         Mockito.verify(controller, Mockito.times(2)).endFrame();
         Mockito.verifyNoMoreInteractions(controller);
     }

@@ -6,8 +6,10 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.google.gson.Gson;
+import graphic.Painter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import tools.Point;
  *
  * @author Andre Matutat
  */
-public class Level implements IndexedGraph<Tile> {
+public class Level implements IndexedGraph<Tile>, ILevel {
     private static final Random RANDOM = new Random();
     private final TileHeuristic tileHeuristic = new TileHeuristic();
     private final List<Room> rooms;
@@ -57,7 +59,7 @@ public class Level implements IndexedGraph<Tile> {
 
         setRandomEnd();
         setRandomStart();
-        
+
         // Generate tile lookup array while initializing
         generateTilesCache();
     }
@@ -175,6 +177,7 @@ public class Level implements IndexedGraph<Tile> {
      *
      * @return The start tile.
      */
+    @Override
     public Tile getStartTile() {
         return startTile;
     }
@@ -193,6 +196,7 @@ public class Level implements IndexedGraph<Tile> {
      *
      * @return The end tile.
      */
+    @Override
     public Tile getEndTile() {
         return endTile;
     }
@@ -335,6 +339,7 @@ public class Level implements IndexedGraph<Tile> {
      * @param globalPoint Position form where to get the tile.
      * @return The tile on that point.
      */
+    @Override
     public Tile getTileAt(Coordinate globalPoint) {
         // Workaround to initialize the tile array for save files without it
         if (tilesCache == null) {
@@ -474,6 +479,7 @@ public class Level implements IndexedGraph<Tile> {
     }
 
     /** @return a random Floor-Tile in the Level */
+    @Override
     public Tile getRandomFloorTile() {
         return getRandomRoom().getRandomFloorTile();
     }
@@ -529,5 +535,19 @@ public class Level implements IndexedGraph<Tile> {
         } catch (IOException e) {
             System.out.println("File" + path + " not found");
         }
+    }
+
+    @Override
+    public void drawLevel(Painter painter, SpriteBatch batch) {
+        for (Room r : getRooms())
+            for (int y = 0; y < r.getLayout().length; y++)
+                for (int x = 0; x < r.getLayout()[0].length; x++) {
+                    Tile t = r.getLayout()[y][x];
+                    if (t.getLevelElement() != LevelElement.SKIP)
+                        painter.draw(
+                                t.getTexture(),
+                                new Point(t.getCoordinate().x, t.getCoordinate().y),
+                                batch);
+                }
     }
 }

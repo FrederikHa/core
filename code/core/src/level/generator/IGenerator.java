@@ -1,6 +1,6 @@
 package level.generator;
 
-import level.elements.Level;
+import level.elements.ILevel;
 import level.elements.graph.Graph;
 import level.generator.dungeong.graphg.NoSolutionException;
 import level.tools.DesignLabel;
@@ -11,7 +11,7 @@ public interface IGenerator {
      *
      * @return The level.
      */
-    Level getLevel() throws NoSolutionException;
+    ILevel getLevel() throws NoSolutionException;
 
     /**
      * Get a leve with the given configuration.
@@ -19,7 +19,7 @@ public interface IGenerator {
      * @param designLabel The design of the level.
      * @return The level.
      */
-    default Level getLevel(DesignLabel designLabel) throws NoSolutionException {
+    default ILevel getLevel(DesignLabel designLabel) throws NoSolutionException {
         return getLevel();
     }
 
@@ -31,7 +31,7 @@ public interface IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    default Level getLevel(int nodes, int edges) throws NoSolutionException {
+    default ILevel getLevel(int nodes, int edges) throws NoSolutionException {
         return getLevel();
     }
 
@@ -44,7 +44,7 @@ public interface IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    default Level getLevel(int nodes, int edges, DesignLabel designLabel)
+    default ILevel getLevel(int nodes, int edges, DesignLabel designLabel)
             throws NoSolutionException {
         return getLevel();
     }
@@ -57,7 +57,7 @@ public interface IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    default Level getLevel(Graph graph, DesignLabel designLabel) throws NoSolutionException {
+    default ILevel getLevel(Graph graph, DesignLabel designLabel) throws NoSolutionException {
         return getLevel();
     }
 
@@ -68,7 +68,7 @@ public interface IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    default Level getLevel(Graph graph) throws NoSolutionException {
+    default ILevel getLevel(Graph graph) throws NoSolutionException {
         return getLevel();
     }
 }

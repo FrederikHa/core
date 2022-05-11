@@ -2,14 +2,10 @@ package level;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import graphic.Painter;
-import level.elements.Level;
-import level.elements.room.Room;
-import level.elements.room.Tile;
+import level.elements.ILevel;
 import level.generator.IGenerator;
 import level.generator.dungeong.graphg.NoSolutionException;
 import level.tools.DesignLabel;
-import level.tools.LevelElement;
-import tools.Point;
 
 /** Manages the level. */
 public class LevelAPI {
@@ -17,7 +13,7 @@ public class LevelAPI {
     private final Painter painter;
     private final IOnLevelLoader onLevelLoader;
     private IGenerator gen;
-    private Level currentLevel;
+    private ILevel currentLevel;
 
     /**
      * @param batch Batch on which to draw.
@@ -62,24 +58,11 @@ public class LevelAPI {
 
     /** Draw level */
     public void update() {
-        drawLevel();
+        currentLevel.drawLevel(painter, batch);
     }
 
-    public Level getCurrentLevel() {
+    public ILevel getCurrentLevel() {
         return currentLevel;
-    }
-
-    private void drawLevel() {
-        for (Room r : getCurrentLevel().getRooms())
-            for (int y = 0; y < r.getLayout().length; y++)
-                for (int x = 0; x < r.getLayout()[0].length; x++) {
-                    Tile t = r.getLayout()[y][x];
-                    if (t.getLevelElement() != LevelElement.SKIP)
-                        painter.draw(
-                                t.getTexture(),
-                                new Point(t.getCoordinate().x, t.getCoordinate().y),
-                                batch);
-                }
     }
 
     /**
@@ -96,7 +79,7 @@ public class LevelAPI {
      *
      * @param level The level to be set.
      */
-    public void setLevel(Level level) {
+    public void setLevel(ILevel level) {
         currentLevel = level;
         onLevelLoader.onLevelLoad();
     }

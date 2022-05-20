@@ -18,7 +18,12 @@ public abstract class DungeonElement {
     /** Will be executed every frame. */
     public void update() {}
 
-    /** @return <code>true</code>, if this instance can be deleted; <code>false</code> otherwise */
+    /** Draws this instance on the batch. */
+    public void draw() {}
+
+    /**
+     * @return <code>true</code>, if this instance can be deleted; <code>false</code> otherwise
+     */
     public boolean removable() {
         return false;
     }
@@ -27,9 +32,13 @@ public abstract class DungeonElement {
         return batch;
     }
 
-    /** @return the exact position in the dungeon of this instance */
+    /**
+     * @return the exact position in the dungeon of this instance
+     */
     public abstract Point getPosition();
 
-    /** @return the (current) Texture-Path of the object */
+    /**
+     * @return the (current) Texture-Path of the object
+     */
     public abstract String getTexturePath();
 }

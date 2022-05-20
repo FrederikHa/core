@@ -15,7 +15,7 @@ public class Room {
     private final DesignLabel design;
     private final Coordinate referencePointGlobal;
     private final Coordinate referencePointLocal;
-    private Tile[][] layout;
+    private final Tile[][] layout;
 
     /**
      * @param layout List of tiles that defines the layout of the room.
@@ -55,24 +55,17 @@ public class Room {
             for (int x = 0; x < toConvert[0].length; x++) {
                 Coordinate p = new Coordinate(x, y);
                 String texture =
-                        TileTextureFactory.findTexture(toConvert[y][x], design, toConvert, p);
+                        TileTextureFactory.findTexturePath(toConvert[y][x], design, toConvert, p);
                 layout[y][x] =
                         new Tile(texture, new Coordinate(x + difx, y + dify), toConvert[y][x]);
             }
     }
 
-    /** @return A copy of the layout. */
+    /**
+     * @return A copy of the layout.
+     */
     public Tile[][] getLayout() {
         return layout;
-    }
-
-    /**
-     * Set the layout of the room.
-     *
-     * @param layout The new layout.
-     */
-    public void setLayout(Tile[][] layout) {
-        this.layout = copyLayout(layout);
     }
 
     /**
@@ -88,14 +81,18 @@ public class Room {
         return copy;
     }
 
-    /** @return Random Tile in the room. */
+    /**
+     * @return Random Tile in the room.
+     */
     public Tile getRandomTile() {
         Random r = new Random();
         Tile[][] layout = getLayout();
         return layout[r.nextInt(layout.length)][r.nextInt(layout[0].length)];
     }
 
-    /** @return Random floor-tile in the room. */
+    /**
+     * @return Random floor-tile in the room.
+     */
     public Tile getRandomFloorTile() {
         Random r = new Random();
         Tile[][] layout = getLayout();
@@ -107,7 +104,9 @@ public class Room {
         return layout[y][x];
     }
 
-    /** @return Random wall-tile in the room. */
+    /**
+     * @return Random wall-tile in the room.
+     */
     public Tile getRandomWallTile() {
         Random r = new Random();
         Tile[][] layout = getLayout();

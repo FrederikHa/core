@@ -24,12 +24,12 @@ public class Tile {
     /**
      * Creates a new Tile.
      *
-     * @param texture Path to the texture of the tile.
+     * @param texturePath Path to the texture of the tile.
      * @param globalPosition Position of the tile in the global system.
      * @param elementType The type of the tile.
      */
-    public Tile(String texture, Coordinate globalPosition, LevelElement elementType) {
-        this.texture = texture;
+    public Tile(String texturePath, Coordinate globalPosition, LevelElement elementType) {
+        this.texture = texturePath;
         this.e = elementType;
         this.globalPosition = globalPosition;
     }
@@ -43,7 +43,7 @@ public class Tile {
         switch (e) {
             case FLOOR:
             case EXIT:
-            case DOOR:
+            case PLACED_DOOR:
                 return true;
             case WALL:
             default:
@@ -51,11 +51,13 @@ public class Tile {
         }
     }
 
-    public String getTexture() {
+    public String getTexturePath() {
         return texture;
     }
 
-    /** @return The global coordinate of the tile. */
+    /**
+     * @return The global coordinate of the tile.
+     */
     public Coordinate getCoordinate() {
         return globalPosition;
     }
@@ -119,7 +121,9 @@ public class Tile {
         this.index = index;
     }
 
-    /** @author Marti Stuwe */
+    /**
+     * @author Marti Stuwe
+     */
     public enum Direction {
         N,
         E,

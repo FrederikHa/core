@@ -6,8 +6,10 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.google.gson.Gson;
+import graphic.Painter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import tools.Point;
  *
  * @author Andre Matutat
  */
-public class Level implements IndexedGraph<Tile> {
+public class GraphLevel implements ILevel, IndexedGraph<Tile> {
     private static final Random RANDOM = new Random();
     private final TileHeuristic tileHeuristic = new TileHeuristic();
     private final List<Room> rooms;
@@ -50,7 +52,7 @@ public class Level implements IndexedGraph<Tile> {
      *     represented by a room.
      * @param rooms A list of rooms that are in this level. Each represents a node.
      */
-    public Level(List<Node> nodes, List<Room> rooms) {
+    public GraphLevel(List<Node> nodes, List<Room> rooms) {
         this.nodes = nodes;
         this.rooms = rooms;
         makeConnections();
@@ -63,7 +65,8 @@ public class Level implements IndexedGraph<Tile> {
     }
 
     /*
-     * Calculates the global positions of all tiles and safes them in a two-dimensional array for fast access.
+     * Calculates the global positions of all tiles and
+     * safes them in a two-dimensional array for fast access.
      */
     private void generateTilesCache() {
         initializeTilesCache();
@@ -553,5 +556,19 @@ public class Level implements IndexedGraph<Tile> {
         } catch (IOException e) {
             System.out.println("File" + path + " not found");
         }
+    }
+
+    @Override
+    public void drawLevel(Painter painter, SpriteBatch batch) {
+        for (Room r : getRooms())
+            for (int y = 0; y < r.getLayout().length; y++)
+                for (int x = 0; x < r.getLayout()[0].length; x++) {
+                    Tile t = r.getLayout()[y][x];
+                    if (t.getLevelElement() != LevelElement.SKIP)
+                        painter.draw(
+                                t.getTexturePath(),
+                                new Point(t.getCoordinate().x, t.getCoordinate().y),
+                                batch);
+                }
     }
 }

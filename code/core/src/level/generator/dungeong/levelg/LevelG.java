@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import level.elements.Level;
+import java.util.logging.Logger;
+import level.elements.GraphLevel;
 import level.elements.graph.BFEdge;
 import level.elements.graph.Graph;
 import level.elements.graph.Node;
 import level.elements.room.Room;
-import level.generator.IGenerator;
+import level.generator.IGraphGenerator;
 import level.generator.dungeong.graphg.GraphG;
 import level.generator.dungeong.graphg.NoSolutionException;
 import level.generator.dungeong.roomg.RoomTemplate;
@@ -24,7 +25,8 @@ import tools.Constants;
  *
  * @author Andre Matutat
  */
-public class LevelG implements IGenerator {
+public class LevelG implements IGraphGenerator {
+    private static final Logger LOG = Logger.getLogger(LevelG.class.getName());
     private final GraphG graphg = new GraphG();
     private final RoomTemplateLoader roomLoader;
     private final String pathToGraph;
@@ -41,12 +43,12 @@ public class LevelG implements IGenerator {
     }
 
     @Override
-    public Level getLevel() throws NoSolutionException {
+    public GraphLevel getLevel() {
         return getLevel(DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
     }
 
     @Override
-    public Level getLevel(int nodeCounter, int edgeCounter, DesignLabel design)
+    public GraphLevel getLevel(int nodeCounter, int edgeCounter, DesignLabel design)
             throws NoSolutionException {
         Graph graph = graphg.getGraph(nodeCounter, edgeCounter, pathToGraph);
         if (graph == null) throw new NoSolutionException("No Graph found for this configuration");
@@ -54,16 +56,21 @@ public class LevelG implements IGenerator {
     }
 
     @Override
-    public Level getLevel(DesignLabel designLabel) throws NoSolutionException {
+    public GraphLevel getLevel(DesignLabel designLabel) {
         File dir = new File(Constants.getPathToGraph());
         File[] allGraphFiles = dir.listFiles();
         assert (allGraphFiles != null && allGraphFiles.length > 0);
         File graph = allGraphFiles[new Random().nextInt(allGraphFiles.length)];
-        return getLevel(graphg.getGraph(graph.getPath()), designLabel);
+        try {
+            return getLevel(graphg.getGraph(graph.getPath()), designLabel);
+        } catch (NoSolutionException e) {
+            LOG.warning("generation of Graph Level failed. retrying. ");
+            return getLevel(designLabel);
+        }
     }
 
     @Override
-    public Level getLevel(int nodeCounter, int edgeCounter) throws NoSolutionException {
+    public GraphLevel getLevel(int nodeCounter, int edgeCounter) throws NoSolutionException {
         return getLevel(
                 nodeCounter,
                 edgeCounter,
@@ -71,13 +78,13 @@ public class LevelG implements IGenerator {
     }
 
     @Override
-    public Level getLevel(Graph graph) throws NoSolutionException {
+    public GraphLevel getLevel(Graph graph) throws NoSolutionException {
         return getLevel(
                 graph, DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
     }
 
     @Override
-    public Level getLevel(Graph graph, DesignLabel design) throws NoSolutionException {
+    public GraphLevel getLevel(Graph graph, DesignLabel design) throws NoSolutionException {
         List<Chain> chain = splitInChains(graph);
         return getLevel(graph, chain, design);
     }
@@ -91,7 +98,7 @@ public class LevelG implements IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    private Level getLevel(Graph graph, List<Chain> chains, DesignLabel design)
+    private GraphLevel getLevel(Graph graph, List<Chain> chains, DesignLabel design)
             throws NoSolutionException {
         return getLevel(getSolveSequence(chains, graph), graph, design);
     }
@@ -105,7 +112,7 @@ public class LevelG implements IGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    private Level getLevel(List<Node> solveSeq, Graph graph, DesignLabel design)
+    private GraphLevel getLevel(List<Node> solveSeq, Graph graph, DesignLabel design)
             throws NoSolutionException {
         List<ConfigurationSpace> configurationSpaces = makeLevel(graph, solveSeq, design);
         List<Room> rooms = new ArrayList<>();
@@ -115,7 +122,7 @@ public class LevelG implements IGenerator {
             RoomTemplate template = cs.getTemplate();
             rooms.add(template.convertToRoom(cs.getGlobalPosition(), design));
         }
-        Level level = new Level(graph.getNodes(), rooms);
+        GraphLevel level = new GraphLevel(graph.getNodes(), rooms);
         if (checkIfCompletable(level)) return level;
         // in rare cases, the path to the target may be blocked.
         else return getLevel(solveSeq, graph, design);
@@ -329,6 +336,8 @@ public class LevelG implements IGenerator {
 
         // add some random factor
         Collections.shuffle(spaces);
+        // only test the first three spaces
+        spaces = spaces.subList(0, (spaces.size() < 3) ? spaces.size() : 3);
 
         // todo bfs ends
 
@@ -376,24 +385,7 @@ public class LevelG implements IGenerator {
             List<ConfigurationSpace> partSolution) {
         List<ConfigurationSpace> possibleSpaces = new ArrayList<>();
         for (ConfigurationSpace neighbourSpace : neighbourSpaces)
-            if (possibleSpaces.isEmpty())
-                possibleSpaces = calCS(neighbourSpace, node, templates, partSolution);
-            else {
-                List<ConfigurationSpace> newSpaces =
-                        calCS(neighbourSpace, node, templates, partSolution);
-                List<ConfigurationSpace> drop = new ArrayList<>();
-
-                for (ConfigurationSpace newSpace : newSpaces) {
-                    boolean equal = false;
-                    for (ConfigurationSpace possibleSpace : possibleSpaces) {
-                        if (newSpace.getGlobalPosition().equals(possibleSpace.getGlobalPosition())
-                                && newSpace.layoutEquals(possibleSpace)) equal = true;
-                    }
-                    if (!equal) drop.add(newSpace);
-                }
-                possibleSpaces = newSpaces;
-                possibleSpaces.removeAll(drop);
-            }
+            possibleSpaces.addAll(calCS(neighbourSpace, node, templates, partSolution));
         return possibleSpaces;
     }
 
@@ -495,7 +487,7 @@ public class LevelG implements IGenerator {
      * @param level To check for.
      * @return Can you reach the End-Tile from the Start-Tile?
      */
-    private boolean checkIfCompletable(Level level) {
+    private boolean checkIfCompletable(GraphLevel level) {
         return level.isTileReachable(level.getStartTile(), level.getEndTile());
     }
 }

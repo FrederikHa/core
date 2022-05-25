@@ -10,7 +10,7 @@ import graphic.HUDPainter;
 import graphic.Painter;
 import level.IOnLevelLoader;
 import level.LevelAPI;
-import level.generator.IGenerator;
+import level.generator.IGraphGenerator;
 import level.generator.dungeong.levelg.LevelG;
 import tools.Constants;
 
@@ -35,7 +35,7 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
 
     protected LevelAPI levelAPI;
     /** Generates the level */
-    protected IGenerator generator;
+    protected IGraphGenerator generator;
 
     private boolean doFirstFrame = true;
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-import level.elements.Level;
+import level.elements.GraphLevel;
 import level.generator.IGenerator;
 import tools.Constants;
 
@@ -22,7 +22,7 @@ public class LevelLoader implements IGenerator {
      * @return loaded level
      */
     @Override
-    public Level getLevel() {
+    public GraphLevel getLevel() {
         File dir = new File(Constants.getPathToLevel());
         File[] allLevelFiles = dir.listFiles();
         assert (allLevelFiles != null && allLevelFiles.length > 0);
@@ -36,10 +36,10 @@ public class LevelLoader implements IGenerator {
      * @param path Path to json
      * @return loaded level
      */
-    public Level loadLevel(String path) {
-        Type levelType = new TypeToken<Level>() {}.getType();
+    public GraphLevel loadLevel(String path) {
+        Type levelType = new TypeToken<GraphLevel>() {}.getType();
         try (JsonReader reader = new JsonReader(new FileReader(path, StandardCharsets.UTF_8))) {
-            Level level = new Gson().fromJson(reader, levelType);
+            GraphLevel level = new Gson().fromJson(reader, levelType);
             level.makeConnections();
             return level;
         } catch (FileNotFoundException e) {

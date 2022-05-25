@@ -20,7 +20,6 @@ public class TileTextureFactory {
         else if (element == LevelElement.FLOOR || element == LevelElement.PLACED_DOOR)
             path += "floor/floor_1";
         else if (element == LevelElement.EXIT) path += "floor/floor_ladder";
-        else if (element == LevelElement.DOOR) path += "floor/floor_1";
 
         // is field in a non-playable area?
         else if (isInSpace(position, layout)) path += "floor/empty";
@@ -61,7 +60,7 @@ public class TileTextureFactory {
         return (belowIsSkip(p, layout)
                         && aboveIsSkip(p, layout)
                         && leftIsSkip(p, layout)
-                        && rightIsFloor(p, layout))
+                        && rightIsSkip(p, layout))
                 || belowIsWall(p, layout)
                         && aboveIsWall(p, layout)
                         && leftIsWall(p, layout)
@@ -195,7 +194,7 @@ public class TileTextureFactory {
         try {
             return layout[(int) p.y + 1][(int) p.x] == LevelElement.FLOOR
                     || layout[(int) p.y + 1][(int) p.x] == LevelElement.EXIT
-                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.DOOR;
+                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.PLACED_DOOR;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -206,7 +205,7 @@ public class TileTextureFactory {
         try {
             return layout[(int) p.y - 1][(int) p.x] == LevelElement.FLOOR
                     || layout[(int) p.y + 1][(int) p.x] == LevelElement.EXIT
-                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.DOOR;
+                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.PLACED_DOOR;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -217,7 +216,7 @@ public class TileTextureFactory {
         try {
             return layout[(int) p.y][(int) p.x - 1] == LevelElement.FLOOR
                     || layout[(int) p.y + 1][(int) p.x] == LevelElement.EXIT
-                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.DOOR;
+                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.PLACED_DOOR;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -228,7 +227,7 @@ public class TileTextureFactory {
         try {
             return layout[(int) p.y][(int) p.x + 1] == LevelElement.FLOOR
                     || layout[(int) p.y + 1][(int) p.x] == LevelElement.EXIT
-                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.DOOR;
+                    || layout[(int) p.y + 1][(int) p.x] == LevelElement.PLACED_DOOR;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;

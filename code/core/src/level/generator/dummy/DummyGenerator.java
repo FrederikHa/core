@@ -2,7 +2,7 @@ package level.generator.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.elements.Level;
+import level.elements.GraphLevel;
 import level.elements.graph.Node;
 import level.elements.room.Room;
 import level.generator.IGenerator;
@@ -13,7 +13,7 @@ import level.tools.LevelElement;
 public class DummyGenerator implements IGenerator {
 
     @Override
-    public Level getLevel() {
+    public GraphLevel getLevel() {
         // setup layouts
         int x = 8;
         int y = 8;
@@ -84,7 +84,7 @@ public class DummyGenerator implements IGenerator {
         graph.add(room2Node);
         graph.add(room3Node);
 
-        Level level = new Level(graph, roomlist);
+        GraphLevel level = new GraphLevel(graph, roomlist);
         level.setStartNode(room3Node);
         level.setStartTile(level.getRoomToNode(room3Node).getRandomFloorTile());
         level.setEndNode(room1Node);

@@ -1,4 +1,4 @@
-package level.elements.graph;
+package level.generator.roomGraph;
 
 /**
  * An edge, that creates a circle in the graph.

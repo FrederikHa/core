@@ -56,8 +56,7 @@ public class RoomTemplateLoader {
      */
     public List<RoomTemplate> getRoomTemplates(DesignLabel label) {
         List<RoomTemplate> results = new ArrayList<>(roomTemplates);
-        if (label != DesignLabel.ALL)
-            results.removeIf(r -> r.getDesign() != label && r.getDesign() != DesignLabel.ALL);
+        results.removeIf(r -> r.getDesign() != label);
         return results;
     }
 

@@ -2,10 +2,9 @@ package level.generator.dungeong.roomg;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.elements.room.Room;
+import level.generator.roomGraph.Room;
 import level.tools.Coordinate;
 import level.tools.DesignLabel;
-import level.tools.LevelElement;
 
 /**
  * A RoomTemplate is a blueprint for a room.
@@ -13,7 +12,7 @@ import level.tools.LevelElement;
  * @author Andre Matutat
  */
 public class RoomTemplate {
-    private LevelElement[][] layout;
+    private RoomElement[][] layout;
     private DesignLabel design;
     private Coordinate localRef;
     private List<Coordinate> doors;
@@ -24,7 +23,7 @@ public class RoomTemplate {
      * @param layout The layout of the room.
      * @param label The DesignLabel of the room.
      */
-    public RoomTemplate(LevelElement[][] layout, DesignLabel label, Coordinate localRef) {
+    public RoomTemplate(RoomElement[][] layout, DesignLabel label, Coordinate localRef) {
         setLayout(layout);
         this.design = label;
         this.localRef = localRef;
@@ -48,7 +47,7 @@ public class RoomTemplate {
             doors = new ArrayList<>();
             for (int x = 0; x < layout[0].length; x++)
                 for (int y = 0; y < layout.length; y++)
-                    if (layout[y][x] == LevelElement.DOOR) doors.add(new Coordinate(x, y));
+                    if (layout[y][x] == RoomElement.DOOR) doors.add(new Coordinate(x, y));
         }
     }
 
@@ -56,10 +55,10 @@ public class RoomTemplate {
      * @return A new template with a 90degree rotated layout.
      */
     public RoomTemplate rotateTemplate() {
-        LevelElement[][] originalLayout = getLayout();
+        RoomElement[][] originalLayout = getLayout();
         int mSize = originalLayout.length;
         int nSize = originalLayout[0].length;
-        LevelElement[][] rotatedLayout = new LevelElement[nSize][mSize];
+        RoomElement[][] rotatedLayout = new RoomElement[nSize][mSize];
         for (int row = 0; row < mSize; row++)
             for (int col = 0; col < nSize; col++)
                 rotatedLayout[col][mSize - 1 - row] = originalLayout[row][col];
@@ -91,7 +90,7 @@ public class RoomTemplate {
     public Room convertToRoom(Coordinate globalRef, DesignLabel design) {
         int layoutHeight = layout.length;
         int layoutWidth = layout[0].length;
-        LevelElement[][] roomLayout = new LevelElement[layoutHeight][layoutWidth];
+        RoomElement[][] roomLayout = new RoomElement[layoutHeight][layoutWidth];
 
         // copy layout
         for (int y = 0; y < layoutHeight; y++)
@@ -100,26 +99,25 @@ public class RoomTemplate {
         // replace unplaced doors with walls
         for (int y = 0; y < layoutHeight; y++)
             for (int x = 0; x < layoutWidth; x++)
-                if (roomLayout[y][x] == LevelElement.DOOR) roomLayout[y][x] = LevelElement.WALL;
+                if (roomLayout[y][x] == RoomElement.DOOR) roomLayout[y][x] = RoomElement.WALL;
         return new Room(roomLayout, design, localRef, globalRef);
     }
 
     public Room convertToRoom(Coordinate globalRef) {
-        if (design == DesignLabel.ALL) return convertToRoom(globalRef, DesignLabel.randomDesign());
-        else return convertToRoom(globalRef, design);
+        return convertToRoom(globalRef, design);
     }
 
-    public LevelElement[][] getLayout() {
+    public RoomElement[][] getLayout() {
         // copy of the layout (IMPORTANT)
         return copyLayout(layout);
     }
 
-    public void setLayout(LevelElement[][] layout) {
+    public void setLayout(RoomElement[][] layout) {
         this.layout = copyLayout(layout);
     }
 
-    private LevelElement[][] copyLayout(LevelElement[][] toCopy) {
-        LevelElement[][] copy = new LevelElement[toCopy.length][toCopy[0].length];
+    private RoomElement[][] copyLayout(RoomElement[][] toCopy) {
+        RoomElement[][] copy = new RoomElement[toCopy.length][toCopy[0].length];
         for (int y = 0; y < toCopy.length; y++)
             for (int x = 0; x < toCopy[0].length; x++) {
                 copy[y][x] = toCopy[y][x];
@@ -145,6 +143,6 @@ public class RoomTemplate {
     }
 
     public void useDoor(Coordinate c) {
-        layout[c.y][c.x] = LevelElement.PLACED_DOOR;
+        layout[c.y][c.x] = RoomElement.PLACED_DOOR;
     }
 }

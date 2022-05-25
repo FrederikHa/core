@@ -2,7 +2,7 @@ package level.generator.dungeong.levelg;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.elements.graph.Node;
+import level.generator.roomGraph.Node;
 
 /**
  * A Chain is a list of nodes where each node is connected to his predecessor and his successor.

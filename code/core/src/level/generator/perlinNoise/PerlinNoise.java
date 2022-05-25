@@ -48,7 +48,7 @@ public class PerlinNoise {
         this.repetitionHeight = repetitionHeight;
         this.octaves = octaves;
 
-        // Permutation zufallszahlen erstellen
+        // generate permutation
         permutation = new double[octaves.length][repetitionWidth][repetitionHeight];
         for (int x = 0; x < repetitionWidth; x++) {
             for (int y = 0; y < repetitionHeight; y++) {

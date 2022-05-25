@@ -12,11 +12,7 @@ public enum LevelElement {
     /** This field is a wall-field */
     WALL(1),
     /** This field is the exit-field to the next level */
-    EXIT(3),
-    /** This field can be a door-field (only for use in the generator) */
-    DOOR(4),
-    /** This field is a door-field */
-    PLACED_DOOR(5);
+    EXIT(3);
 
     private int value;
 
@@ -24,6 +20,11 @@ public enum LevelElement {
         this.value = value;
     }
 
+    /**
+     * returns the value of the element
+     *
+     * @return the value of the element
+     */
     public int getValue() {
         return value;
     }

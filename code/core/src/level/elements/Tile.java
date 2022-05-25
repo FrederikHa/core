@@ -1,4 +1,4 @@
-package level.elements.room;
+package level.elements;
 
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.utils.Array;
@@ -14,11 +14,10 @@ import level.tools.LevelElement;
  * @author Andre Matutat
  */
 public class Tile {
-
+    private LevelElement elementType;
     private final Coordinate globalPosition;
+    private String texturePath;
     private transient Array<Connection<Tile>> connections = new Array<>();
-    private String texture;
-    private LevelElement e;
     private int index;
 
     /**
@@ -29,8 +28,8 @@ public class Tile {
      * @param elementType The type of the tile.
      */
     public Tile(String texturePath, Coordinate globalPosition, LevelElement elementType) {
-        this.texture = texturePath;
-        this.e = elementType;
+        this.texturePath = texturePath;
+        this.elementType = elementType;
         this.globalPosition = globalPosition;
     }
 
@@ -40,10 +39,9 @@ public class Tile {
      * @return true if the tile is floor or exit; false if it is a wall or empty.
      */
     public boolean isAccessible() {
-        switch (e) {
+        switch (elementType) {
             case FLOOR:
             case EXIT:
-            case PLACED_DOOR:
                 return true;
             case WALL:
             default:
@@ -51,8 +49,19 @@ public class Tile {
         }
     }
 
+    /**
+     * Change the type and texture of the tile.
+     *
+     * @param elementType New type of the tile.
+     * @param texture New texture of the tile.
+     */
+    public void setLevelElement(LevelElement elementType, String texture) {
+        this.elementType = elementType;
+        this.texturePath = texture;
+    }
+
     public String getTexturePath() {
-        return texture;
+        return texturePath;
     }
 
     /**
@@ -63,18 +72,23 @@ public class Tile {
     }
 
     public LevelElement getLevelElement() {
-        return e;
+        return elementType;
     }
 
-    /**
-     * Change the type and texture of the tile.
-     *
-     * @param elementType New type of the tile.
-     * @param texture New texture of the tile.
-     */
-    public void setLevelElement(LevelElement elementType, String texture) {
-        this.e = elementType;
-        this.texture = texture;
+    // --------------------------- For LibGDX Pathfinding ---------------------------
+    public enum Direction {
+        N,
+        E,
+        S,
+        W,
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     /**
@@ -97,7 +111,6 @@ public class Tile {
      *
      * @param goal To which tile is the direction.
      * @return Can either be north, east, south, west or a combination of two.
-     * @author Marti Stuwe
      */
     public Direction[] directionTo(Tile goal) {
         List<Direction> directions = new ArrayList<>();
@@ -105,7 +118,8 @@ public class Tile {
             directions.add(Direction.E);
         } else if (globalPosition.x > goal.getCoordinate().x) {
             directions.add(Direction.W);
-        } else if (globalPosition.y < goal.getCoordinate().y) {
+        }
+        if (globalPosition.y < goal.getCoordinate().y) {
             directions.add(Direction.N);
         } else if (globalPosition.y > goal.getCoordinate().y) {
             directions.add(Direction.S);
@@ -113,21 +127,6 @@ public class Tile {
         return directions.toArray(new Direction[0]);
     }
 
-    public int getIndex() {
-        return index;
-    }
+    // --------------------------- End LibGDX Pathfinding ---------------------------
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    /**
-     * @author Marti Stuwe
-     */
-    public enum Direction {
-        N,
-        E,
-        S,
-        W,
-    }
 }

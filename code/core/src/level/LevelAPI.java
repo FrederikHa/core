@@ -2,9 +2,8 @@ package level;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import graphic.Painter;
-import level.elements.ILevel;
-import level.generator.IGraphGenerator;
-import level.generator.dungeong.graphg.NoSolutionException;
+import level.elements.Level;
+import level.generator.IGenerator;
 import level.tools.DesignLabel;
 
 /** Manages the level. */
@@ -12,8 +11,8 @@ public class LevelAPI {
     private final SpriteBatch batch;
     private final Painter painter;
     private final IOnLevelLoader onLevelLoader;
-    private IGraphGenerator gen;
-    private ILevel currentLevel;
+    private IGenerator gen;
+    private Level currentLevel;
 
     /**
      * @param batch Batch on which to draw.
@@ -24,7 +23,7 @@ public class LevelAPI {
     public LevelAPI(
             SpriteBatch batch,
             Painter painter,
-            IGraphGenerator generator,
+            IGenerator generator,
             IOnLevelLoader onLevelLoader) {
         this.gen = generator;
         this.batch = batch;
@@ -32,27 +31,19 @@ public class LevelAPI {
         this.onLevelLoader = onLevelLoader;
     }
 
-    /**
-     * Load a new level.
-     *
-     * @throws NoSolutionException if no level can be loaded.
-     */
-    public void loadLevel() throws NoSolutionException {
+    /** Load a new level. */
+    public void loadLevel() {
         currentLevel = gen.getLevel();
         onLevelLoader.onLevelLoad();
     }
 
     /**
-     * Load a new level with the given configuration.
+     * Load a new level
      *
-     * @param nodes Number of rooms in the level
-     * @param edges Number of loops in the level
-     * @param designLabel design of the level
-     * @throws NoSolutionException if no level can be loaded.
+     * @param designLabel The design that the level should have
      */
-    public void loadLevel(int nodes, int edges, DesignLabel designLabel)
-            throws NoSolutionException {
-        currentLevel = gen.getLevel(nodes, edges, designLabel);
+    public void loadLevel(DesignLabel designLabel) {
+        currentLevel = gen.getLevel(designLabel);
         onLevelLoader.onLevelLoad();
     }
 
@@ -61,17 +52,25 @@ public class LevelAPI {
         currentLevel.drawLevel(painter, batch);
     }
 
-    public ILevel getCurrentLevel() {
+    public Level getCurrentLevel() {
         return currentLevel;
     }
-
     /**
      * Set the level generator
      *
      * @param generator new level generator
      */
-    public void setGenerator(IGraphGenerator generator) {
+    public void setGenerator(IGenerator generator) {
         gen = generator;
+    }
+
+    /**
+     * returns the Generator of the Level
+     *
+     * @return the Generator of the Level
+     */
+    public IGenerator getGenerator() {
+        return gen;
     }
 
     /**
@@ -79,7 +78,7 @@ public class LevelAPI {
      *
      * @param level The level to be set.
      */
-    public void setLevel(ILevel level) {
+    public void setLevel(Level level) {
         currentLevel = level;
         onLevelLoader.onLevelLoad();
     }

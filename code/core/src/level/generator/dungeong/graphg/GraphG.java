@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import level.elements.graph.Graph;
-import level.elements.graph.Node;
+import level.generator.roomGraph.Graph;
+import level.generator.roomGraph.Node;
 
 /**
  * Can read in graphs from .json or can generate new graphs.

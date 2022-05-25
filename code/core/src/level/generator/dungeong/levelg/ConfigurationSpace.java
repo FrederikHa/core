@@ -2,10 +2,10 @@ package level.generator.dungeong.levelg;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.elements.graph.Node;
+import level.generator.dungeong.roomg.RoomElement;
 import level.generator.dungeong.roomg.RoomTemplate;
+import level.generator.roomGraph.Node;
 import level.tools.Coordinate;
-import level.tools.LevelElement;
 
 /**
  * @author Andre Matutat
@@ -49,7 +49,7 @@ public class ConfigurationSpace {
     private List<Coordinate> convertInCoordinates(
             RoomTemplate template, Coordinate globalPosition) {
         List<Coordinate> coordinate = new ArrayList<>();
-        LevelElement[][] layout = template.getLayout();
+        RoomElement[][] layout = template.getLayout();
         int difx = globalPosition.x - template.getLocalRef().x;
         int dify = globalPosition.y - template.getLocalRef().y;
         for (int y = 0; y < layout.length; y++)
@@ -71,9 +71,8 @@ public class ConfigurationSpace {
 
         try {
 
-            LevelElement[][] layout = template.getLayout();
-            if (layout[localP.y][localP.x] != LevelElement.WALL
-                    && layout[localP.y][localP.x] != LevelElement.DOOR) return false;
+            RoomElement[][] layout = template.getLayout();
+            if (layout[localP.y][localP.x] != RoomElement.WALL) return false;
 
             // outer points
             if (localP.y == 0
@@ -84,7 +83,7 @@ public class ConfigurationSpace {
             // check all the way up
             boolean ok = true;
             for (int y = localP.y; y < layout.length; y++)
-                if (layout[y][localP.x] != LevelElement.SKIP) {
+                if (layout[y][localP.x] != RoomElement.SKIP) {
                     ok = false;
                     break;
                 }
@@ -94,7 +93,7 @@ public class ConfigurationSpace {
             // check all the way down
             ok = true;
             for (int y = localP.y; y <= 0; y--)
-                if (layout[y][localP.x] != LevelElement.SKIP) {
+                if (layout[y][localP.x] != RoomElement.SKIP) {
                     ok = false;
                     break;
                 }
@@ -104,7 +103,7 @@ public class ConfigurationSpace {
             // check all the way right
             ok = true;
             for (int x = localP.x; x < layout[0].length; x++)
-                if (layout[localP.y][x] != LevelElement.SKIP) {
+                if (layout[localP.y][x] != RoomElement.SKIP) {
                     ok = false;
                     break;
                 }
@@ -114,7 +113,7 @@ public class ConfigurationSpace {
             // check all the way left
             ok = true;
             for (int x = localP.x; x <= 0; x--)
-                if (layout[localP.y][x] != LevelElement.SKIP) {
+                if (layout[localP.y][x] != RoomElement.SKIP) {
                     ok = false;
                     break;
                 }
@@ -127,8 +126,8 @@ public class ConfigurationSpace {
     }
 
     public boolean layoutEquals(ConfigurationSpace other) {
-        LevelElement[][] otherLayout = other.getTemplate().getLayout();
-        LevelElement[][] thisLayout = template.getLayout();
+        RoomElement[][] otherLayout = other.getTemplate().getLayout();
+        RoomElement[][] thisLayout = template.getLayout();
         if (otherLayout.length != thisLayout.length) return false;
         if (otherLayout[0].length != thisLayout[0].length) return false;
 

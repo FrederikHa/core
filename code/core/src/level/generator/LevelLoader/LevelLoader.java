@@ -10,24 +10,31 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-import level.elements.GraphLevel;
+import level.elements.Level;
 import level.generator.IGenerator;
+import level.tools.DesignLabel;
+import level.tools.LevelSize;
 import tools.Constants;
 
 public class LevelLoader implements IGenerator {
 
+    /** not used because level is already defined by File */
+    @Override
+    public Level getLevel(DesignLabel designLabel, LevelSize size) {
+        return getLevel();
+    }
     /**
      * Load a level from a json
      *
      * @return loaded level
      */
     @Override
-    public GraphLevel getLevel() {
+    public Level getLevel() {
         File dir = new File(Constants.getPathToLevel());
         File[] allLevelFiles = dir.listFiles();
         assert (allLevelFiles != null && allLevelFiles.length > 0);
         File levelFile = allLevelFiles[new Random().nextInt(allLevelFiles.length)];
-        return loadLevel(levelFile.getPath());
+        return getLevel(levelFile.getPath());
     }
 
     /**
@@ -36,10 +43,10 @@ public class LevelLoader implements IGenerator {
      * @param path Path to json
      * @return loaded level
      */
-    public GraphLevel loadLevel(String path) {
-        Type levelType = new TypeToken<GraphLevel>() {}.getType();
+    public Level getLevel(String path) {
+        Type levelType = new TypeToken<Level>() {}.getType();
         try (JsonReader reader = new JsonReader(new FileReader(path, StandardCharsets.UTF_8))) {
-            GraphLevel level = new Gson().fromJson(reader, levelType);
+            Level level = new Gson().fromJson(reader, levelType);
             level.makeConnections();
             return level;
         } catch (FileNotFoundException e) {

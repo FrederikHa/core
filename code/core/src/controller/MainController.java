@@ -10,8 +10,8 @@ import graphic.HUDPainter;
 import graphic.Painter;
 import level.IOnLevelLoader;
 import level.LevelAPI;
-import level.generator.IGraphGenerator;
-import level.generator.dungeong.levelg.LevelG;
+import level.generator.IGenerator;
+import level.generator.randomwalk.RandomWalkGenerator;
 import tools.Constants;
 
 /** The heart of the framework. From here all strings are pulled. */
@@ -35,7 +35,7 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
 
     protected LevelAPI levelAPI;
     /** Generates the level */
-    protected IGraphGenerator generator;
+    protected IGenerator generator;
 
     private boolean doFirstFrame = true;
 
@@ -93,9 +93,7 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         painter = new Painter(camera);
         hudPainter = new HUDPainter();
         hudController = new HUDController(hudBatch);
-        generator =
-                new LevelG(
-                        Constants.getPathToRoomTemplates(), Constants.getPathToGraph()); // DungeonG
+        generator = new RandomWalkGenerator();
         levelAPI = new LevelAPI(batch, painter, generator, this);
         setup();
     }

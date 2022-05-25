@@ -6,18 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-import level.elements.GraphLevel;
-import level.elements.graph.BFEdge;
-import level.elements.graph.Graph;
-import level.elements.graph.Node;
-import level.elements.room.Room;
-import level.generator.IGraphGenerator;
+import level.elements.Level;
+import level.generator.IGenerator;
 import level.generator.dungeong.graphg.GraphG;
 import level.generator.dungeong.graphg.NoSolutionException;
 import level.generator.dungeong.roomg.RoomTemplate;
 import level.generator.dungeong.roomg.RoomTemplateLoader;
+import level.generator.roomGraph.BFEdge;
+import level.generator.roomGraph.Graph;
+import level.generator.roomGraph.Node;
+import level.generator.roomGraph.Room;
 import level.tools.Coordinate;
 import level.tools.DesignLabel;
+import level.tools.LevelElement;
+import level.tools.LevelSize;
 import tools.Constants;
 
 /**
@@ -25,7 +27,7 @@ import tools.Constants;
  *
  * @author Andre Matutat
  */
-public class LevelG implements IGraphGenerator {
+public class LevelG implements IGenerator {
     private static final Logger LOG = Logger.getLogger(LevelG.class.getName());
     private final GraphG graphg = new GraphG();
     private final RoomTemplateLoader roomLoader;
@@ -42,21 +44,24 @@ public class LevelG implements IGraphGenerator {
         this.pathToGraph = pathToGraph;
     }
 
-    @Override
-    public GraphLevel getLevel() {
-        return getLevel(DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
-    }
-
-    @Override
-    public GraphLevel getLevel(int nodeCounter, int edgeCounter, DesignLabel design)
+    /**
+     * Get a level with the given configuration.
+     *
+     * @param nodeCount Number of nodes in the level-graph.
+     * @param edgeCount Number of (extra) edges in the level-graph.
+     * @param designLabel The design of the level.
+     * @return The level.
+     * @throws NoSolutionException If no solution can be found for the given configuration.
+     */
+    public Level getLevel(int nodeCounter, int edgeCounter, DesignLabel design)
             throws NoSolutionException {
         Graph graph = graphg.getGraph(nodeCounter, edgeCounter, pathToGraph);
         if (graph == null) throw new NoSolutionException("No Graph found for this configuration");
         return getLevel(graph, design);
     }
 
-    @Override
-    public GraphLevel getLevel(DesignLabel designLabel) {
+    @Override // TODO use size to determine edge and node count
+    public Level getLevel(DesignLabel designLabel, LevelSize size) {
         File dir = new File(Constants.getPathToGraph());
         File[] allGraphFiles = dir.listFiles();
         assert (allGraphFiles != null && allGraphFiles.length > 0);
@@ -69,22 +74,32 @@ public class LevelG implements IGraphGenerator {
         }
     }
 
-    @Override
-    public GraphLevel getLevel(int nodeCounter, int edgeCounter) throws NoSolutionException {
+    /**
+     * Get a level with the given configuration.
+     *
+     * @param designLabel The design of the level.
+     * @return The level.
+     */
+    public Level getLevel(int nodeCounter, int edgeCounter) throws NoSolutionException {
         return getLevel(
                 nodeCounter,
                 edgeCounter,
                 DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
     }
 
-    @Override
-    public GraphLevel getLevel(Graph graph) throws NoSolutionException {
+    /**
+     * Generate a Level from a given graph.
+     *
+     * @param graph The Level-Graph.
+     * @return The level.
+     * @throws NoSolutionException If no solution can be found for the given configuration.
+     */
+    public Level getLevel(Graph graph) throws NoSolutionException {
         return getLevel(
                 graph, DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
     }
 
-    @Override
-    public GraphLevel getLevel(Graph graph, DesignLabel design) throws NoSolutionException {
+    public Level getLevel(Graph graph, DesignLabel design) throws NoSolutionException {
         List<Chain> chain = splitInChains(graph);
         return getLevel(graph, chain, design);
     }
@@ -98,7 +113,7 @@ public class LevelG implements IGraphGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    private GraphLevel getLevel(Graph graph, List<Chain> chains, DesignLabel design)
+    private Level getLevel(Graph graph, List<Chain> chains, DesignLabel design)
             throws NoSolutionException {
         return getLevel(getSolveSequence(chains, graph), graph, design);
     }
@@ -112,7 +127,7 @@ public class LevelG implements IGraphGenerator {
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    private GraphLevel getLevel(List<Node> solveSeq, Graph graph, DesignLabel design)
+    private Level getLevel(List<Node> solveSeq, Graph graph, DesignLabel design)
             throws NoSolutionException {
         List<ConfigurationSpace> configurationSpaces = makeLevel(graph, solveSeq, design);
         List<Room> rooms = new ArrayList<>();
@@ -122,11 +137,50 @@ public class LevelG implements IGraphGenerator {
             RoomTemplate template = cs.getTemplate();
             rooms.add(template.convertToRoom(cs.getGlobalPosition(), design));
         }
-        GraphLevel level = new GraphLevel(graph.getNodes(), rooms);
+        Level level = new Level(roomsToDesignLabelList(rooms), design);
         if (checkIfCompletable(level)) return level;
         // in rare cases, the path to the target may be blocked.
         else return getLevel(solveSeq, graph, design);
     }
+
+    /*
+     * Calculates the global positions of all tiles and safes them in a two-dimensional array for fast access.
+     */
+    private LevelElement[][] roomsToDesignLabelList(List<Room> rooms) {
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        for (Room r : rooms) {
+            minX = Math.min(minX, r.getReferencePointGlobal().x - r.getReferencePointLocal().x);
+            maxX =
+                    Math.max(
+                            maxX,
+                            r.getReferencePointGlobal().x
+                                    - r.getReferencePointLocal().x
+                                    + r.getLayout().length);
+            minY = Math.min(minY, r.getReferencePointGlobal().y - r.getReferencePointLocal().y);
+            maxY =
+                    Math.max(
+                            maxY,
+                            r.getReferencePointGlobal().y
+                                    - r.getReferencePointLocal().y
+                                    + r.getLayout()[0].length);
+        }
+        LevelElement[][] res = new LevelElement[maxX - minX + 1][maxY - minY + 1];
+        // insert tiles into tilesCache array
+        for (Room r : rooms) {
+            for (int i = 0; i < r.getLayout().length; i++) {
+                for (int j = 0; j < r.getLayout()[i].length; j++) {
+                    int x = i + r.getReferencePointGlobal().x - r.getReferencePointLocal().x;
+                    int y = j + r.getReferencePointGlobal().y - r.getReferencePointLocal().y;
+                    res[x - minX][y - minY] = r.getLayout()[i][j].getLevelElement();
+                }
+            }
+        }
+        return res;
+    }
+
     /**
      * Split a graph in chains.
      *
@@ -384,8 +438,9 @@ public class LevelG implements IGraphGenerator {
             List<RoomTemplate> templates,
             List<ConfigurationSpace> partSolution) {
         List<ConfigurationSpace> possibleSpaces = new ArrayList<>();
-        for (ConfigurationSpace neighbourSpace : neighbourSpaces)
+        for (ConfigurationSpace neighbourSpace : neighbourSpaces) {
             possibleSpaces.addAll(calCS(neighbourSpace, node, templates, partSolution));
+        }
         return possibleSpaces;
     }
 
@@ -487,7 +542,7 @@ public class LevelG implements IGraphGenerator {
      * @param level To check for.
      * @return Can you reach the End-Tile from the Start-Tile?
      */
-    private boolean checkIfCompletable(GraphLevel level) {
-        return level.isTileReachable(level.getStartTile(), level.getEndTile());
+    private boolean checkIfCompletable(Level level) {
+        return level.findPath(level.getStartTile(), level.getEndTile()).getCount() != 0;
     }
 }

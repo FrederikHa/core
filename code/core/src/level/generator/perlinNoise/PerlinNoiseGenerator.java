@@ -44,8 +44,8 @@ public class PerlinNoiseGenerator implements IGenerator {
     public Level getLevel(long seed) {
         final Random random = new Random(seed);
         DesignLabel designLabel =
-                DesignLabel.values()[random.nextInt(DesignLabel.values().length - 1)];
-        LevelSize size = LevelSize.values()[random.nextInt(LevelSize.values().length - 1)];
+                DesignLabel.values()[random.nextInt(DesignLabel.values().length)];
+        LevelSize size = LevelSize.values()[random.nextInt(LevelSize.values().length)];
         return getLevel(designLabel, size, random);
     }
 

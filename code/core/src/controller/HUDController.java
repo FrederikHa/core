@@ -2,6 +2,7 @@ package controller;
 
 import basiselements.HUDElement;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -65,7 +66,7 @@ public class HUDController extends AbstractController<HUDElement> {
         generator.dispose();
         Label label = new Label(text, labelStyle);
         label.setSize(width, height);
-        label.setPosition(x, y);
+        label.setPosition(x, Lwjgl3ApplicationConfiguration.getDisplayMode().height - y - height);
 
         textStage.addActor(label);
         return label;

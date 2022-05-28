@@ -1,5 +1,6 @@
 package graphic;
 
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,7 +20,7 @@ public class HUDPainter {
         sprite.setSize(texture.getWidth(), texture.getHeight());
 
         // where to draw the sprite
-        sprite.setPosition(position.x, position.y - texture.getHeight());
+        sprite.setPosition(position.x, Lwjgl3ApplicationConfiguration.getDisplayMode().height - position.y - texture.getHeight());
 
         // need to be called before drawing
         batch.begin();
@@ -39,7 +40,7 @@ public class HUDPainter {
         sprite.setSize(texture.getWidth() * xScaling, texture.getHeight() * yScaling);
 
         // where to draw the sprite
-        sprite.setPosition(position.x, position.y - texture.getHeight() * yScaling);
+        sprite.setPosition(position.x, Lwjgl3ApplicationConfiguration.getDisplayMode().height - position.y - texture.getHeight() * yScaling);
 
         // need to be called before drawing
         batch.begin();

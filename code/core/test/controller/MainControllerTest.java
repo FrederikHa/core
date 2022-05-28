@@ -18,10 +18,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-import tools.Constants;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MainController.class, Gdx.class, Constants.class})
+@PrepareForTest({MainController.class, Gdx.class})
 class MainControllerTest {
     MainController controller;
     SpriteBatch batch;
@@ -58,8 +57,6 @@ class MainControllerTest {
         PowerMockito.whenNew(RandomWalkGenerator.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(RandomWalkGenerator.class));
-
-        PowerMockito.mockStatic(Constants.class, invocation -> "abc");
     }
 
     @Test

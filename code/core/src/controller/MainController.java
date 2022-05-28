@@ -4,6 +4,7 @@ import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import graphic.DungeonCamera;
 import graphic.HUDPainter;
@@ -12,7 +13,6 @@ import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.generator.IGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
-import tools.Constants;
 
 /** The heart of the framework. From here all strings are pulled. */
 public abstract class MainController extends ScreenAdapter implements IOnLevelLoader {
@@ -93,7 +93,10 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
     private void firstFocus() {
         doFirstFocus = false;
         entityController = new EntityController();
-        setupCameras();
+        setupCameras(
+                Lwjgl3ApplicationConfiguration.getDisplayMode().width / 16f,
+                Lwjgl3ApplicationConfiguration.getDisplayMode().height / 16f,
+                0.25f);
         painter = new Painter(camera);
         hudPainter = new HUDPainter();
         hudController = new HUDController(hudBatch);
@@ -137,9 +140,16 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         return hudBatch;
     }
 
-    private void setupCameras() {
-        camera = new DungeonCamera(null, Constants.VIRTUAL_WIDTH, Constants.VIRTUAL_HEIGHT);
-        camera.zoom = Constants.DEFAULT_ZOOM_FACTOR;
+    /**
+     * setup a new camera
+     *
+     * @param vitualWidth
+     * @param virtualHeight
+     * @param zoom
+     */
+    public void setupCameras(float vitualWidth, float virtualHeight, float zoom) {
+        camera = new DungeonCamera(null, vitualWidth, virtualHeight);
+        camera.zoom = zoom;
 
         // See also:
         // https://stackoverflow.com/questions/52011592/libgdx-set-ortho-camera

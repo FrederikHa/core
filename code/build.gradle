@@ -11,6 +11,7 @@ plugins {
 }
 
 group = "io.github.pm-dungeon"
+version = "5.0.0"
 
 ext {
     // we can not use the + operator here

@@ -361,7 +361,6 @@ public class LevelG implements IGenerator {
             List<ConfigurationSpace> partSolution,
             List<RoomTemplate> templates) {
         // todo switch from bfs to dfs
-
         if (notPlaced.isEmpty()) return partSolution; // end solution found
 
         // take next node

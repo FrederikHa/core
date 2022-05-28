@@ -43,8 +43,7 @@ public class PerlinNoiseGenerator implements IGenerator {
      */
     public Level getLevel(long seed) {
         final Random random = new Random(seed);
-        DesignLabel designLabel =
-                DesignLabel.values()[random.nextInt(DesignLabel.values().length)];
+        DesignLabel designLabel = DesignLabel.values()[random.nextInt(DesignLabel.values().length)];
         LevelSize size = LevelSize.values()[random.nextInt(LevelSize.values().length)];
         return getLevel(designLabel, size, random);
     }
@@ -130,8 +129,7 @@ public class PerlinNoiseGenerator implements IGenerator {
                 String texturePath =
                         TileTextureFactory.findTexturePath(
                                 levelElements[y][x], design, levelElements, new Coordinate(x, y));
-                res[y][x] =
-                        new Tile(texturePath, new Coordinate(x, y), levelElements[y][x]);
+                res[y][x] = new Tile(texturePath, new Coordinate(x, y), levelElements[y][x]);
             }
         }
         return res;

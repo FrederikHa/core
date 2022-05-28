@@ -69,29 +69,36 @@ class MainControllerTest {
         Mockito.verify(controller).setSpriteBatch(batch);
         Mockito.verifyNoMoreInteractions(controller, batch);
 
+        controller.show();
+        Mockito.verify(controller).show();
+        Mockito.verify(controller).setup();
+
         controller.render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller).setup();
         Mockito.verify(controller).beginFrame();
         Mockito.verify(controller).endFrame();
-        Mockito.verify(controller, Mockito.times(6)).runLoop();
+        Mockito.verify(controller, Mockito.times(6)).stopLoop();
         Mockito.verifyNoMoreInteractions(controller);
     }
 
     @Test
     public void test_render_paused() {
         controller.setSpriteBatch(batch);
-        when(controller.runLoop()).thenReturn(false);
+        when(controller.stopLoop()).thenReturn(true);
         Mockito.verify(controller).setSpriteBatch(batch);
         Mockito.verifyNoMoreInteractions(controller, batch);
 
+        controller.show();
         controller.render(someArbitraryValueGreater0forDelta);
-        Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
+        Mockito.verify(controller).show();
         Mockito.verify(controller).setup();
+        Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller, never()).beginFrame();
-        when(controller.runLoop()).thenReturn(true);
+
+        when(controller.stopLoop()).thenReturn(false);
         Mockito.verify(controller, never()).endFrame();
-        Mockito.verify(controller, Mockito.times(1)).runLoop();
+        Mockito.verify(controller, Mockito.times(1)).stopLoop();
         Mockito.verifyNoMoreInteractions(controller);
     }
 }

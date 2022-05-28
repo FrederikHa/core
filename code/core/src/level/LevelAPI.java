@@ -55,6 +55,7 @@ public class LevelAPI {
     public Level getCurrentLevel() {
         return currentLevel;
     }
+
     /**
      * Set the level generator
      *

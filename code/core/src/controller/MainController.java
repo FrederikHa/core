@@ -37,16 +37,29 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
     /** Generates the level */
     protected IGenerator generator;
 
-    private boolean doFirstFrame = true;
+    private boolean doFirstFocus = true;
 
     // --------------------------- OWN IMPLEMENTATION ---------------------------
+
     protected abstract void setup();
+
+    protected abstract void gainFocus();
 
     protected abstract void beginFrame();
 
     protected abstract void endFrame();
 
+    protected abstract void loseFocus();
+
     // --------------------------- END OWN IMPLEMENTATION ------------------------
+
+    @Override
+    public final void show() {
+        if (doFirstFocus) {
+            firstFocus();
+        }
+        gainFocus();
+    }
 
     /**
      * Main game loop. Redraws the dungeon and calls the own implementation (beginFrame, endFrame
@@ -56,29 +69,20 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
      */
     @Override
     public void render(float delta) {
-        if (doFirstFrame) {
-            firstFrame();
-        }
         batch.setProjectionMatrix(camera.combined);
-        if (runLoop()) {
-            beginFrame();
-            if (runLoop()) {
-                clearScreen();
-                levelAPI.update();
-                if (runLoop()) {
-                    entityController.update();
-                    if (runLoop()) {
-                        camera.update();
-                        if (runLoop()) {
-                            hudController.update();
-                            if (runLoop()) {
-                                endFrame();
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        if (stopLoop()) return;
+        beginFrame();
+        if (stopLoop()) return;
+        clearScreen();
+        levelAPI.update();
+        if (stopLoop()) return;
+        entityController.update();
+        if (stopLoop()) return;
+        camera.update();
+        if (stopLoop()) return;
+        hudController.update();
+        if (stopLoop()) return;
+        endFrame();
     }
 
     private void clearScreen() {
@@ -86,8 +90,8 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    private void firstFrame() {
-        doFirstFrame = false;
+    private void firstFocus() {
+        doFirstFocus = false;
         entityController = new EntityController();
         setupCameras();
         painter = new Painter(camera);
@@ -98,16 +102,39 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
         setup();
     }
 
+    @Override
+    public final void resume() {
+        show();
+    }
+
+    @Override
+    public final void pause() {
+        hide();
+    }
+
+    @Override
+    public final void hide() {
+        loseFocus();
+    }
+
     public void setSpriteBatch(SpriteBatch batch) {
         this.batch = batch;
+    }
+
+    public SpriteBatch getSpriteBatch() {
+        return batch;
     }
 
     public void setHudBatch(SpriteBatch batch) {
         this.hudBatch = batch;
     }
 
-    protected boolean runLoop() {
-        return true;
+    protected boolean stopLoop() {
+        return false;
+    }
+
+    public SpriteBatch getHudBatch() {
+        return hudBatch;
     }
 
     private void setupCameras() {

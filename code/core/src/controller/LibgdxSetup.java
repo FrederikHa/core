@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 /** ApplicationListener that delegates to the MainGameController. Just some setup. */
 public class LibgdxSetup extends Game {
 
-    private final MainController mc;
+    private MainController mc;
 
     /**
      * The batch is necessary to draw ALL the stuff. Every object that uses draw need to know the
@@ -36,5 +36,14 @@ public class LibgdxSetup extends Game {
     public void dispose() {
         batch.dispose();
         hudBatch.dispose();
+    }
+
+    public void changeMainController(MainController mc) {
+        this.mc = mc;
+        if (mc.getSpriteBatch() == null) {
+            create();
+        } else {
+            setScreen(mc);
+        }
     }
 }

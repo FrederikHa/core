@@ -49,6 +49,9 @@ public class LevelAPI {
 
     /** Draw level */
     public void update() {
+        if (currentLevel == null) {
+            return;
+        }
         currentLevel.drawLevel(painter, batch);
     }
 

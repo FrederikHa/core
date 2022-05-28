@@ -1,6 +1,5 @@
 package controller;
 
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Gdx;
@@ -94,10 +93,8 @@ class MainControllerTest {
         Mockito.verify(controller).show();
         Mockito.verify(controller).setup();
         Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
-        Mockito.verify(controller, never()).beginFrame();
-
-        when(controller.stopLoop()).thenReturn(false);
-        Mockito.verify(controller, never()).endFrame();
+        Mockito.verify(controller, Mockito.never()).beginFrame();
+        Mockito.verify(controller, Mockito.never()).endFrame();
         Mockito.verify(controller, Mockito.times(1)).stopLoop();
         Mockito.verifyNoMoreInteractions(controller);
     }

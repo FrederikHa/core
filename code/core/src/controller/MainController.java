@@ -71,9 +71,9 @@ public abstract class MainController extends ScreenAdapter implements IOnLevelLo
     public void render(float delta) {
         batch.setProjectionMatrix(camera.combined);
         if (stopLoop()) return;
+        clearScreen();
         beginFrame();
         if (stopLoop()) return;
-        clearScreen();
         levelAPI.update();
         if (stopLoop()) return;
         entityController.update();

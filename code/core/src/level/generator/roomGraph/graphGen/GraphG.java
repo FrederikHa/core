@@ -1,4 +1,4 @@
-package level.generator.dungeong.graphg;
+package level.generator.roomGraph.graphGen;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import level.generator.roomGraph.Graph;
-import level.generator.roomGraph.Node;
+import level.generator.roomGraph.elements.Graph;
+import level.generator.roomGraph.elements.Node;
 
 /**
  * Can read in graphs from .json or can generate new graphs.

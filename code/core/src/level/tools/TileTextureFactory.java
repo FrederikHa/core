@@ -18,7 +18,7 @@ public class TileTextureFactory {
             LevelElement[][] layout,
             Coordinate position) {
         String path = design.name().toLowerCase() + "/";
-        if (element == LevelElement.SKIP) path += "floor/empty";
+        if (element == LevelElement.VOID) path += "floor/empty";
         else if (element == LevelElement.FLOOR) path += "floor/floor_1";
         else if (element == LevelElement.EXIT) path += "floor/floor_ladder";
 
@@ -263,7 +263,7 @@ public class TileTextureFactory {
 
     private static boolean rightIsSkip(Coordinate p, LevelElement[][] layout) {
         try {
-            return layout[(int) p.y][(int) p.x + 1] == LevelElement.SKIP;
+            return layout[(int) p.y][(int) p.x + 1] == LevelElement.VOID;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -272,7 +272,7 @@ public class TileTextureFactory {
 
     private static boolean leftIsSkip(Coordinate p, LevelElement[][] layout) {
         try {
-            return layout[(int) p.y][(int) p.x - 1] == LevelElement.SKIP;
+            return layout[(int) p.y][(int) p.x - 1] == LevelElement.VOID;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -281,7 +281,7 @@ public class TileTextureFactory {
 
     private static boolean aboveIsSkip(Coordinate p, LevelElement[][] layout) {
         try {
-            return layout[(int) p.y + 1][(int) p.x] == LevelElement.SKIP;
+            return layout[(int) p.y + 1][(int) p.x] == LevelElement.VOID;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
@@ -290,7 +290,7 @@ public class TileTextureFactory {
 
     private static boolean belowIsSkip(Coordinate p, LevelElement[][] layout) {
         try {
-            return layout[(int) p.y - 1][(int) p.x] == LevelElement.SKIP;
+            return layout[(int) p.y - 1][(int) p.x] == LevelElement.VOID;
 
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;

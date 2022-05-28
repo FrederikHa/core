@@ -58,7 +58,7 @@ public class RandomWalkGenerator implements IGenerator {
         int ySize = random.nextInt(minY, maxY);
         LevelElement[][] layout = new LevelElement[ySize][xSize];
         for (int y = 0; y < ySize; y++)
-            for (int x = 0; x < xSize; x++) layout[y][x] = LevelElement.SKIP;
+            for (int x = 0; x < xSize; x++) layout[y][x] = LevelElement.VOID;
 
         Coordinate position = new Coordinate(random.nextInt(0, xSize), random.nextInt(0, ySize));
         int steps =

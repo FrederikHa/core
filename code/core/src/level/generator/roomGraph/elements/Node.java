@@ -1,4 +1,4 @@
-package level.generator.roomGraph;
+package level.generator.roomGraph.elements;
 
 import java.util.ArrayList;
 import java.util.List;

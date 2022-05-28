@@ -114,7 +114,7 @@ public class PerlinNoiseGenerator implements IGenerator {
                 if (playingArea.contains(i, j)) {
                     res[i][j] = LevelElement.FLOOR;
                 } else {
-                    res[i][j] = LevelElement.SKIP;
+                    res[i][j] = LevelElement.VOID;
                 }
             }
         }

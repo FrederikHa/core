@@ -24,7 +24,7 @@ public class TileTextureFactoryTest {
         // skips
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 2; x++) {
-                layout[y][x] = LevelElement.SKIP;
+                layout[y][x] = LevelElement.VOID;
             }
         }
 

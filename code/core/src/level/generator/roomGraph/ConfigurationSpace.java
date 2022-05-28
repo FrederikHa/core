@@ -1,10 +1,10 @@
-package level.generator.dungeong.levelg;
+package level.generator.roomGraph;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.generator.dungeong.roomg.RoomElement;
-import level.generator.dungeong.roomg.RoomTemplate;
-import level.generator.roomGraph.Node;
+import level.generator.roomGraph.elements.Node;
+import level.generator.roomGraph.elements.RoomElement;
+import level.generator.roomGraph.elements.RoomTemplate;
 import level.tools.Coordinate;
 
 /**
@@ -18,7 +18,8 @@ public class ConfigurationSpace {
     /**
      * @param template The used RoomTemplate
      * @param node Node in the graph this configuration-space belongs to.
-     * @param globalPosition Position of th localReferencePoint of the template in the global system
+     * @param globalPosition Position of the localReferencePoint of the template in the global
+     *     system
      */
     public ConfigurationSpace(RoomTemplate template, Node node, Coordinate globalPosition) {
         this.template = new RoomTemplate(template);
@@ -32,6 +33,8 @@ public class ConfigurationSpace {
      * @return If the given template overlapped with this configuration-space.
      */
     public boolean overlap(RoomTemplate otherTemplate, Coordinate otherGlobal) {
+        System.out.println(globalPosition.x + " " + globalPosition.y);
+        System.out.println(globalPosition.x + " " + globalPosition.y);
         List<Coordinate> thisPoints = convertInCoordinates(template, globalPosition);
         List<Coordinate> otherPoints = convertInCoordinates(otherTemplate, otherGlobal);
         for (Coordinate p1 : thisPoints)
@@ -52,9 +55,11 @@ public class ConfigurationSpace {
         RoomElement[][] layout = template.getLayout();
         int difx = globalPosition.x - template.getLocalRef().x;
         int dify = globalPosition.y - template.getLocalRef().y;
-        for (int y = 0; y < layout.length; y++)
-            for (int x = 0; x < layout[0].length; x++)
+        for (int y = 0; y < layout.length; y++) {
+            for (int x = 0; x < layout[0].length; x++) {
                 coordinate.add(new Coordinate(x + difx, y + dify));
+            }
+        }
         return coordinate;
     }
 

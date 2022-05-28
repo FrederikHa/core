@@ -6,7 +6,7 @@ package level.tools;
  * @author Andre Matutat
  */
 public enum LevelElement {
-    SKIP(-2),
+    VOID(-2),
     /** This field is a floor-field */
     FLOOR(0),
     /** This field is a wall-field */

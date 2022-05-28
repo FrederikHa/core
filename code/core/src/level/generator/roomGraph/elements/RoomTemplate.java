@@ -1,8 +1,7 @@
-package level.generator.dungeong.roomg;
+package level.generator.roomGraph.elements;
 
 import java.util.ArrayList;
 import java.util.List;
-import level.generator.roomGraph.Room;
 import level.tools.Coordinate;
 import level.tools.DesignLabel;
 

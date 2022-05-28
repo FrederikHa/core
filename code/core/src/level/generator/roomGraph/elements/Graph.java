@@ -1,7 +1,8 @@
-package level.generator.roomGraph;
+package level.generator.roomGraph.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import level.generator.roomGraph.BFEdge;
 
 /**
  * A graph indicating the structure of the level

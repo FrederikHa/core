@@ -41,10 +41,10 @@ pdf/
 *.log
 *.jar
 hs_err_pid*
-bin/**/*
+*.bin/**/*
 .metadata/
 .gradle/**
-/**/build/**
+*./**/build/**
 
 
 # Haskell #
@@ -158,6 +158,11 @@ latex.out/
 # IntelliJ IDEA #
 #########
 .idea
+
+# Eclipse IDE #
+#########
+.project
+.settings/
 
 # Gradle #
 #########

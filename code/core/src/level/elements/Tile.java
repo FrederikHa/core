@@ -29,7 +29,7 @@ public class Tile {
      */
     public Tile(String texturePath, Coordinate globalPosition, LevelElement elementType) {
         this.texturePath = texturePath;
-        this.elementType = elementType;
+        this.elementType = (elementType == null) ? LevelElement.VOID : elementType;
         this.globalPosition = globalPosition;
     }
 

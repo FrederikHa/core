@@ -1,4 +1,4 @@
-package level.generator.dungeong.graphg;
+package level.generator.roomGraph.graphGen;
 
 /**
  * Thrown when a graph cannot be planar due to the demand requirements.

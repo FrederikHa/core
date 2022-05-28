@@ -1,4 +1,4 @@
-package level.generator.dungeong.levelg;
+package level.generator.roomGraph;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,27 +8,24 @@ import java.util.Random;
 import java.util.logging.Logger;
 import level.elements.Level;
 import level.generator.IGenerator;
-import level.generator.dungeong.graphg.GraphG;
-import level.generator.dungeong.graphg.NoSolutionException;
-import level.generator.dungeong.roomg.RoomTemplate;
-import level.generator.dungeong.roomg.RoomTemplateLoader;
-import level.generator.roomGraph.BFEdge;
-import level.generator.roomGraph.Graph;
-import level.generator.roomGraph.Node;
-import level.generator.roomGraph.Room;
+import level.generator.roomGraph.elements.Graph;
+import level.generator.roomGraph.elements.Node;
+import level.generator.roomGraph.elements.Room;
+import level.generator.roomGraph.elements.RoomTemplate;
+import level.generator.roomGraph.graphGen.GraphG;
+import level.generator.roomGraph.graphGen.NoSolutionException;
 import level.tools.Coordinate;
 import level.tools.DesignLabel;
 import level.tools.LevelElement;
 import level.tools.LevelSize;
-import tools.Constants;
 
 /**
  * Uses RoomG and GraphG to generate level.
  *
  * @author Andre Matutat
  */
-public class LevelG implements IGenerator {
-    private static final Logger LOG = Logger.getLogger(LevelG.class.getName());
+public class RoomGenerator implements IGenerator {
+    private static final Logger LOG = Logger.getLogger(RoomGenerator.class.getName());
     private final GraphG graphg = new GraphG();
     private final RoomTemplateLoader roomLoader;
     private final String pathToGraph;
@@ -39,9 +36,24 @@ public class LevelG implements IGenerator {
      * @param pathToRoomTemplates Path to roomTemplates.json
      * @param pathToGraph path to graphs/
      */
-    public LevelG(String pathToRoomTemplates, String pathToGraph) {
+    public RoomGenerator(String pathToRoomTemplates, String pathToGraph) {
         roomLoader = new RoomTemplateLoader(pathToRoomTemplates);
         this.pathToGraph = pathToGraph;
+    }
+
+    @Override // TODO use size to determine edge and node count
+    public Level getLevel(DesignLabel designLabel, LevelSize size) {
+        File dir = new File(pathToGraph);
+        File[] allGraphFiles = dir.listFiles();
+        assert (allGraphFiles != null && allGraphFiles.length > 0);
+        File graph = allGraphFiles[new Random().nextInt(allGraphFiles.length)];
+        try {
+            return getLevel(graphg.getGraph(graph.getPath()), designLabel);
+        } catch (NoSolutionException e) {
+            LOG.warning("generation of Graph Level failed. retrying...");
+            LOG.info(e.getMessage());
+            return getLevel(designLabel, size);
+        }
     }
 
     /**
@@ -58,20 +70,6 @@ public class LevelG implements IGenerator {
         Graph graph = graphg.getGraph(nodeCounter, edgeCounter, pathToGraph);
         if (graph == null) throw new NoSolutionException("No Graph found for this configuration");
         return getLevel(graph, design);
-    }
-
-    @Override // TODO use size to determine edge and node count
-    public Level getLevel(DesignLabel designLabel, LevelSize size) {
-        File dir = new File(Constants.getPathToGraph());
-        File[] allGraphFiles = dir.listFiles();
-        assert (allGraphFiles != null && allGraphFiles.length > 0);
-        File graph = allGraphFiles[new Random().nextInt(allGraphFiles.length)];
-        try {
-            return getLevel(graphg.getGraph(graph.getPath()), designLabel);
-        } catch (NoSolutionException e) {
-            LOG.warning("generation of Graph Level failed. retrying. ");
-            return getLevel(designLabel);
-        }
     }
 
     /**
@@ -99,6 +97,14 @@ public class LevelG implements IGenerator {
                 graph, DesignLabel.values()[new Random().nextInt(DesignLabel.values().length)]);
     }
 
+    /**
+     * Generate a new Level from a given Graph with a given design
+     *
+     * @param graph The Level-Graph.
+     * @param design The Design-Label the level should have.
+     * @return The level.
+     * @throws NoSolutionException If no solution can be found for the given configuration.
+     */
     public Level getLevel(Graph graph, DesignLabel design) throws NoSolutionException {
         List<Chain> chain = splitInChains(graph);
         return getLevel(graph, chain, design);
@@ -121,15 +127,15 @@ public class LevelG implements IGenerator {
     /**
      * Generate a Level from a graph that has already been split in chains.
      *
-     * @param graph The Level-Graph.
      * @param solveSeq Sequence to solve.
+     * @param graph The Level-Graph.
      * @param design The Design-Label the level should have.
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
     private Level getLevel(List<Node> solveSeq, Graph graph, DesignLabel design)
             throws NoSolutionException {
-        List<ConfigurationSpace> configurationSpaces = makeLevel(graph, solveSeq, design);
+        List<ConfigurationSpace> configurationSpaces = makeLevel(graph, solveSeq);
         List<Room> rooms = new ArrayList<>();
         placeDoors(configurationSpaces);
         // replace templates
@@ -144,7 +150,8 @@ public class LevelG implements IGenerator {
     }
 
     /*
-     * Calculates the global positions of all tiles and safes them in a two-dimensional array for fast access.
+     * Calculates the global positions of all tiles
+     * and safes them in a two-dimensional array for fast access.
      */
     private LevelElement[][] roomsToDesignLabelList(List<Room> rooms) {
         int minX = Integer.MAX_VALUE;
@@ -158,23 +165,23 @@ public class LevelG implements IGenerator {
                             maxX,
                             r.getReferencePointGlobal().x
                                     - r.getReferencePointLocal().x
-                                    + r.getLayout().length);
+                                    + r.getLayout()[0].length);
             minY = Math.min(minY, r.getReferencePointGlobal().y - r.getReferencePointLocal().y);
             maxY =
                     Math.max(
                             maxY,
                             r.getReferencePointGlobal().y
                                     - r.getReferencePointLocal().y
-                                    + r.getLayout()[0].length);
+                                    + r.getLayout().length);
         }
-        LevelElement[][] res = new LevelElement[maxX - minX + 1][maxY - minY + 1];
+        LevelElement[][] res = new LevelElement[maxY - minY + 1][maxX - minX + 1];
         // insert tiles into tilesCache array
         for (Room r : rooms) {
-            for (int i = 0; i < r.getLayout().length; i++) {
-                for (int j = 0; j < r.getLayout()[i].length; j++) {
+            for (int j = 0; j < r.getLayout().length; j++) {
+                for (int i = 0; i < r.getLayout()[j].length; i++) {
                     int x = i + r.getReferencePointGlobal().x - r.getReferencePointLocal().x;
                     int y = j + r.getReferencePointGlobal().y - r.getReferencePointLocal().y;
-                    res[x - minX][y - minY] = r.getLayout()[i][j].getLevelElement();
+                    res[y - minY][x - minX] = r.getLayout()[j][i].getLevelElement();
                 }
             }
         }
@@ -231,11 +238,11 @@ public class LevelG implements IGenerator {
 
     private List<List<Node>> getAllPath(Node start, Node goal, Graph graph) {
         List<List<Node>> paths = new ArrayList<>();
-        graph_search(start, new ArrayList<>(), goal, paths, graph);
+        graphSearch(start, new ArrayList<>(), goal, paths, graph);
         return paths;
     }
 
-    private void graph_search(
+    private void graphSearch(
             Node currentNode, List<Node> marked, Node goal, List<List<Node>> paths, Graph graph) {
         List<Node> myMarked = new ArrayList<>(marked);
         myMarked.add(currentNode);
@@ -244,7 +251,7 @@ public class LevelG implements IGenerator {
             for (int child : currentNode.getNeighbours()) {
                 Node childNode = graph.getNodes().get(child);
                 if (!myMarked.contains(childNode))
-                    graph_search(childNode, new ArrayList<>(myMarked), goal, paths, graph);
+                    graphSearch(childNode, new ArrayList<>(myMarked), goal, paths, graph);
             }
     }
 
@@ -326,18 +333,18 @@ public class LevelG implements IGenerator {
     /**
      * @param graph The Graph of the level.
      * @param solveSeq Sequence to solve.
-     * @param design The Design-Label the level should have.
      * @return The level.
      * @throws NoSolutionException If no solution can be found for the given configuration.
      */
-    private List<ConfigurationSpace> makeLevel(Graph graph, List<Node> solveSeq, DesignLabel design)
+    private List<ConfigurationSpace> makeLevel(Graph graph, List<Node> solveSeq)
             throws NoSolutionException {
-        List<RoomTemplate> templates = roomLoader.getRoomTemplates(design);
+        List<RoomTemplate> templates = roomLoader.getRoomTemplates();
         List<RoomTemplate> allTemplates = new ArrayList<>();
         for (RoomTemplate template : templates) allTemplates.addAll(template.getAllRotations());
+        System.out.println(templates.size());
         List<ConfigurationSpace> solution =
                 getLevelCS(graph, solveSeq, new ArrayList<>(), allTemplates);
-
+        System.out.println(solution.size());
         if (solution == null || solution.isEmpty())
             throw new NoSolutionException(
                     "No way to convert the given graph into a level using the given templates.");
@@ -361,6 +368,7 @@ public class LevelG implements IGenerator {
             List<ConfigurationSpace> partSolution,
             List<RoomTemplate> templates) {
         // todo switch from bfs to dfs
+
         if (notPlaced.isEmpty()) return partSolution; // end solution found
 
         // take next node
@@ -468,16 +476,21 @@ public class LevelG implements IGenerator {
             } else {
                 possibleCS = getCSDoors(staticSpace, layout, dynamicNode);
             }
+            System.out.println("possible spaces: " + possibleCS.size());
             for (ConfigurationSpace possibleSpace : possibleCS) {
                 boolean isValid = true;
-                for (ConfigurationSpace levelSpace : level)
+                for (ConfigurationSpace levelSpace : level) {
                     if (levelSpace.overlap(possibleSpace)) {
                         isValid = false;
+                        System.out.println("removed");
                         break;
                     }
+                    System.out.println("continue");
+                }
                 if (isValid) spaces.add(possibleSpace);
             }
         }
+        System.out.println("spaces: " + spaces.size());
         return spaces;
     }
 

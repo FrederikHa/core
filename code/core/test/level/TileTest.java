@@ -16,7 +16,7 @@ public class TileTest {
         Tile floor = new Tile("", dummyCoordinate, LevelElement.FLOOR);
         Tile exit = new Tile("", dummyCoordinate, LevelElement.EXIT);
         Tile start = new Tile("", dummyCoordinate, LevelElement.FLOOR);
-        Tile skip = new Tile("", dummyCoordinate, LevelElement.SKIP);
+        Tile skip = new Tile("", dummyCoordinate, LevelElement.VOID);
         assertTrue(floor.isAccessible());
         assertTrue(exit.isAccessible());
         assertTrue(start.isAccessible());

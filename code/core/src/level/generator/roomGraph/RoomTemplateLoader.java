@@ -1,4 +1,4 @@
-package level.generator.dungeong.roomg;
+package level.generator.roomGraph;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import level.tools.DesignLabel;
+import level.generator.roomGraph.elements.RoomTemplate;
 
 /**
  * Loads and stores roomtemplates from a .json.
@@ -49,15 +49,12 @@ public class RoomTemplateLoader {
     }
 
     /**
-     * Returns a list of RoomTemplates that have the corresponding DesignLabel.
+     * Returns a list of RoomTemplates.
      *
-     * @param label The DesignLabel, use ALL if you don't care.
      * @return The list.
      */
-    public List<RoomTemplate> getRoomTemplates(DesignLabel label) {
-        List<RoomTemplate> results = new ArrayList<>(roomTemplates);
-        results.removeIf(r -> r.getDesign() != label);
-        return results;
+    public List<RoomTemplate> getRoomTemplates() {
+        return new ArrayList<>(roomTemplates);
     }
 
     /**

@@ -1,6 +1,5 @@
-package level.generator.roomGraph;
+package level.generator.roomGraph.elements;
 
-import level.generator.dungeong.roomg.RoomElement;
 import level.tools.Coordinate;
 import level.tools.DesignLabel;
 

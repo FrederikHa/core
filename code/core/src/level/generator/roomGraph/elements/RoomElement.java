@@ -1,4 +1,4 @@
-package level.generator.dungeong.roomg;
+package level.generator.roomGraph.elements;
 
 import level.tools.LevelElement;
 
@@ -19,7 +19,7 @@ public enum RoomElement {
                 return LevelElement.WALL;
             case SKIP:
             default:
-                return LevelElement.SKIP;
+                return LevelElement.VOID;
         }
     }
 }

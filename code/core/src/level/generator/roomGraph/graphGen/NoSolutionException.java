@@ -1,4 +1,4 @@
-package level.generator.dungeong.graphg;
+package level.generator.roomGraph.graphGen;
 
 /**
  * Thrown when no solution could be found.

@@ -180,7 +180,6 @@ public class Level implements IndexedGraph<Tile> {
      */
     public void setEndTile(Tile end) {
         if (endTile != null) changeTileElementType(endTile, LevelElement.FLOOR);
-        System.out.println(end.getLevelElement());
         endTile = end;
         changeTileElementType(end, LevelElement.EXIT);
     }
@@ -321,7 +320,7 @@ public class Level implements IndexedGraph<Tile> {
         for (int y = 0; y < layout.length; y++)
             for (int x = 0; x < layout[0].length; x++) {
                 Tile t = layout[y][x];
-                if (t.getLevelElement() != LevelElement.SKIP)
+                if (t.getLevelElement() != LevelElement.VOID)
                     painter.draw(
                             t.getTexturePath(),
                             new Point(t.getCoordinate().x, t.getCoordinate().y),

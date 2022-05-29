@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import basiselements.HUDElement;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -112,7 +113,9 @@ public class HUDControllerTest {
                 .drawText(text, fontPath, color, size, width, height, x, y, borderWidth);
         Assert.assertEquals(labelMock, label);
         verify(labelMock).setSize(width, height);
-        verify(labelMock).setPosition(x, y);
+        verify(labelMock)
+                .setPosition(
+                        x, Lwjgl3ApplicationConfiguration.getDisplayMode().height - y - height);
         verifyNoMoreInteractions(controllerSpy, labelMock);
     }
 
@@ -141,7 +144,9 @@ public class HUDControllerTest {
         verify(controllerSpy).drawText(text, fontPath, color, size, width, height, x, y, 1);
         Assert.assertEquals(labelMock, label);
         verify(labelMock).setSize(width, height);
-        verify(labelMock).setPosition(x, y);
+        verify(labelMock)
+                .setPosition(
+                        x, Lwjgl3ApplicationConfiguration.getDisplayMode().height - y - height);
         verifyNoMoreInteractions(controllerSpy, labelMock);
     }
 }

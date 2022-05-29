@@ -1,10 +1,10 @@
 package graphic;
 
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import textures.TextureMap;
-import tools.Constants;
 import tools.Point;
 
 /** Uses LibGDX to draw sprites on the various <code>SpriteBatch</code>es. */
@@ -17,16 +17,14 @@ public class HUDPainter {
         Sprite sprite = new Sprite(texture);
 
         // set up scaling of textures
-        sprite.setSize(
-                texture.getWidth() / Constants.DEFAULT_ZOOM_FACTOR,
-                texture.getHeight() / Constants.DEFAULT_ZOOM_FACTOR);
+        sprite.setSize(texture.getWidth(), texture.getHeight());
 
         // where to draw the sprite
         sprite.setPosition(
                 position.x,
-                Constants.WINDOW_HEIGHT
+                Lwjgl3ApplicationConfiguration.getDisplayMode().height
                         - position.y
-                        - texture.getHeight() / Constants.DEFAULT_ZOOM_FACTOR);
+                        - texture.getHeight());
 
         // need to be called before drawing
         batch.begin();
@@ -47,7 +45,10 @@ public class HUDPainter {
 
         // where to draw the sprite
         sprite.setPosition(
-                position.x, Constants.WINDOW_HEIGHT - position.y - texture.getHeight() * yScaling);
+                position.x,
+                Lwjgl3ApplicationConfiguration.getDisplayMode().height
+                        - position.y
+                        - texture.getHeight() * yScaling);
 
         // need to be called before drawing
         batch.begin();

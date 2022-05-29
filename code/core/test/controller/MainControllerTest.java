@@ -17,10 +17,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-import tools.Constants;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MainController.class, Gdx.class, Constants.class})
+@PrepareForTest({MainController.class, Gdx.class})
 class MainControllerTest {
     MainController controller;
     SpriteBatch batch;
@@ -57,8 +56,21 @@ class MainControllerTest {
         PowerMockito.whenNew(RandomWalkGenerator.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(RandomWalkGenerator.class));
+    }
 
-        PowerMockito.mockStatic(Constants.class, invocation -> "abc");
+    @Test
+    public void test_show() {
+        controller.setSpriteBatch(batch);
+
+        Mockito.verify(controller).setSpriteBatch(batch);
+        Mockito.verifyNoMoreInteractions(controller, batch);
+
+        controller.show();
+        Mockito.verify(controller).show();
+        Mockito.verify(controller).firstFocus();
+        Mockito.verify(controller).gainFocus();
+        Mockito.verify(controller).setup();
+        Mockito.verifyNoMoreInteractions(controller);
     }
 
     @Test
@@ -70,11 +82,13 @@ class MainControllerTest {
 
         controller.show();
         Mockito.verify(controller).show();
+        Mockito.verify(controller).firstFocus();
+        Mockito.verify(controller).gainFocus();
         Mockito.verify(controller).setup();
+        Mockito.verifyNoMoreInteractions(controller);
 
         controller.render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller).render(someArbitraryValueGreater0forDelta);
-        Mockito.verify(controller).setup();
         Mockito.verify(controller).beginFrame();
         Mockito.verify(controller).endFrame();
         Mockito.verify(controller, Mockito.times(6)).stopLoop();
@@ -88,7 +102,6 @@ class MainControllerTest {
         Mockito.verify(controller).setSpriteBatch(batch);
         Mockito.verifyNoMoreInteractions(controller, batch);
 
-        controller.show();
         controller.render(someArbitraryValueGreater0forDelta);
         Mockito.verify(controller).show();
         Mockito.verify(controller).setup();

@@ -1,14 +1,17 @@
 package graphic;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import textures.TextureMap;
 import tools.Point;
 
 /** Uses LibGDX to draw sprites on the various <code>SpriteBatch</code>es. */
 public class Painter {
-    private final DungeonCamera camera;
+    private final OrthographicCamera camera;
     private final TextureMap textureMap = new TextureMap();
 
     /**
@@ -16,7 +19,7 @@ public class Painter {
      *
      * @param camera only objects that are in the camera are drawn
      */
-    public Painter(DungeonCamera camera) {
+    public Painter(OrthographicCamera camera) {
         this.camera = camera;
     }
 
@@ -29,7 +32,7 @@ public class Painter {
             String texturePath,
             Point position,
             SpriteBatch batch) {
-        if (camera.isPointInFrustum(position.x, position.y)) {
+        if (isPointInFrustum(position.x, position.y)) {
             Sprite sprite = new Sprite(textureMap.getTexture(texturePath));
             // set up scaling of textures
             sprite.setSize(xScaling, yScaling);
@@ -78,5 +81,18 @@ public class Painter {
     public void drawWithScaling(
             float xScaling, float yScaling, String texturePath, Point position, SpriteBatch batch) {
         draw(-0.85f, -0.5f, xScaling, yScaling, texturePath, position, batch);
+    }
+
+    /**
+     * Checks if the point (x,y) is probably been seen on the screen. Otherwise, don't render this
+     * point.
+     */
+    public boolean isPointInFrustum(float x, float y) {
+        final float OFFSET = 1f;
+        BoundingBox bounds =
+                new BoundingBox(
+                        new Vector3(x - OFFSET, y - OFFSET, 0),
+                        new Vector3(x + OFFSET, y + OFFSET, 0));
+        return camera.frustum.boundsInFrustum(bounds);
     }
 }

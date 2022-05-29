@@ -22,6 +22,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+import resourceLoading.ResourceController;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({HUDController.class})
@@ -33,6 +34,7 @@ public class HUDControllerTest {
     private HUDController controller;
     private HUDController controllerSpy;
     private Label labelMock;
+    private ResourceController resourcesMock;
 
     @Before
     public void setUp() throws Exception {
@@ -42,7 +44,10 @@ public class HUDControllerTest {
         textStage = Mockito.mock(Stage.class);
         PowerMockito.whenNew(Stage.class).withAnyArguments().thenReturn(textStage);
 
-        controller = new HUDController(batch);
+        resourcesMock = Mockito.mock(ResourceController.class);
+        PowerMockito.whenNew(Label.class).withAnyArguments().thenReturn(labelMock);
+
+        controller = new HUDController(batch, resourcesMock);
 
         controllerSpy = Mockito.spy(controller);
         labelMock = Mockito.mock(Label.class);

@@ -123,22 +123,6 @@ public class DungeonCameraTest {
     }
 
     @Test
-    public void test_isPointInFrustum() {
-        cam.isPointInFrustum(2, 2);
-        Mockito.verify(cam).isPointInFrustum(2, 2);
-        Mockito.verify(frustum).boundsInFrustum(any());
-        Mockito.verifyNoMoreInteractions(cam, pos, frustum, entity);
-    }
-
-    @Test
-    public void test_isPointInFrustum_noFollow() {
-        cam_noFollow.isPointInFrustum(2, 2);
-        Mockito.verify(cam_noFollow).isPointInFrustum(2, 2);
-        Mockito.verify(frustum_noFollow).boundsInFrustum(any());
-        Mockito.verifyNoMoreInteractions(cam_noFollow, pos_noFollow, frustum_noFollow);
-    }
-
-    @Test
     public void test_getFrustum() {
         Mockito.verifyNoMoreInteractions(cam, pos, frustum, entity);
     }

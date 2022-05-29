@@ -9,17 +9,24 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import resourceLoading.ResourceController;
 
 public class HUDController extends AbstractController<HUDElement> {
-    private final Stage textStage;
+    private final ResourceController resourceController;
+
+    private Stage textStage;
 
     /**
      * Keeps a set of HUD elements and makes sure they are drawn.
      *
      * @param batch the batch for the HUD
      */
-    public HUDController(SpriteBatch batch) {
-        textStage = new Stage(new ScreenViewport(), batch);
+    public HUDController(SpriteBatch batch, ResourceController resourceController) {
+        this.resourceController = resourceController;
+        resourceController.runOnUIThread(
+                () -> {
+                    textStage = new Stage(new ScreenViewport(), batch);
+                });
     }
 
     /** Redraws the HUD and all HUD elements. */
@@ -28,6 +35,11 @@ public class HUDController extends AbstractController<HUDElement> {
         super.update();
 
         textStage.act();
+        textStage.draw();
+    }
+
+    /** draws text from textstage */
+    public void drawTextOnly() {
         textStage.draw();
     }
 
@@ -62,7 +74,10 @@ public class HUDController extends AbstractController<HUDElement> {
         parameter.borderWidth = borderWidth;
         parameter.color = color;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = generator.generateFont(parameter);
+        resourceController.runOnUIThread(
+                () -> {
+                    labelStyle.font = generator.generateFont(parameter);
+                });
         generator.dispose();
         Label label = new Label(text, labelStyle);
         label.setSize(width, height);

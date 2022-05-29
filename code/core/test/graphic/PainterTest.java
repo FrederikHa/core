@@ -1,5 +1,6 @@
 package graphic;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -30,11 +31,11 @@ public class PainterTest {
         batch = Mockito.mock(SpriteBatch.class);
         painter = Mockito.spy(new Painter(cam));
         frustum = Mockito.mock(Frustum.class);
-        Mockito.when(cam.isPointInFrustum(anyFloat(), anyFloat())).thenReturn(true);
     }
 
     @Test
     public void test_draw_1() throws Exception {
+        Mockito.when(painter.isPointInFrustum(anyFloat(), anyFloat())).thenReturn(true);
         PowerMockito.whenNew(Sprite.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(Sprite.class));
@@ -44,7 +45,7 @@ public class PainterTest {
         Point p = Mockito.spy(new Point(12, 13));
 
         painter.draw(10, 11, 1.1f, 1.2f, "texture", p, batch);
-        Mockito.verify(cam).isPointInFrustum(p.x, p.y);
+        Mockito.verify(painter).isPointInFrustum(p.x, p.y);
         Mockito.verify(painter).draw(10, 11, 1.1f, 1.2f, "texture", p, batch);
         Mockito.verify(batch).begin();
         Mockito.verify(batch).end();
@@ -53,6 +54,7 @@ public class PainterTest {
 
     @Test
     public void test_draw_2() throws Exception {
+        Mockito.when(painter.isPointInFrustum(anyFloat(), anyFloat())).thenReturn(true);
         PowerMockito.whenNew(Sprite.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(Sprite.class));
@@ -64,7 +66,7 @@ public class PainterTest {
 
         painter.draw("texture", p, batch);
         Mockito.verify(painter).draw("texture", p, batch);
-        Mockito.verify(cam).isPointInFrustum(p.x, p.y);
+        Mockito.verify(painter).isPointInFrustum(p.x, p.y);
         Mockito.verify(painter)
                 .draw(
                         -0.85f,
@@ -81,6 +83,7 @@ public class PainterTest {
 
     @Test
     public void test_draw_3() throws Exception {
+        Mockito.when(painter.isPointInFrustum(anyFloat(), anyFloat())).thenReturn(true);
         PowerMockito.whenNew(Sprite.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(Sprite.class));
@@ -92,7 +95,7 @@ public class PainterTest {
 
         painter.draw(10, 11, "texture", p, batch);
         Mockito.verify(painter).draw(10, 11, "texture", p, batch);
-        Mockito.verify(cam).isPointInFrustum(p.x, p.y);
+        Mockito.verify(painter).isPointInFrustum(p.x, p.y);
         Mockito.verify(painter)
                 .draw(
                         10,
@@ -109,6 +112,7 @@ public class PainterTest {
 
     @Test
     public void test_drawWithScaling() throws Exception {
+        Mockito.when(painter.isPointInFrustum(anyFloat(), anyFloat())).thenReturn(true);
         PowerMockito.whenNew(Sprite.class)
                 .withAnyArguments()
                 .thenReturn(Mockito.mock(Sprite.class));
@@ -120,9 +124,17 @@ public class PainterTest {
         painter.drawWithScaling(1.1f, 1.2f, "texture", p, batch);
         Mockito.verify(painter).drawWithScaling(1.1f, 1.2f, "texture", p, batch);
         Mockito.verify(painter).draw(-0.85f, -0.5f, 1.1f, 1.2f, "texture", p, batch);
-        Mockito.verify(cam).isPointInFrustum(p.x, p.y);
+        Mockito.verify(painter).isPointInFrustum(p.x, p.y);
         Mockito.verify(batch).begin();
         Mockito.verify(batch).end();
         Mockito.verifyNoMoreInteractions(painter, batch, cam);
+    }
+
+    @Test
+    public void test_isPointInFrustum_noFollow() {
+        painter.isPointInFrustum(2, 2);
+        Mockito.verify(painter).isPointInFrustum(2, 2);
+        Mockito.verify(frustum).boundsInFrustum(any());
+        Mockito.verifyNoMoreInteractions(painter, batch, cam, frustum);
     }
 }

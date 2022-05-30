@@ -10,11 +10,13 @@ public class ResourceController {
     private final LinkedList<ResourceLoader<?>> allLoaders = new LinkedList<>();
 
     /**
-     * @param <T>
-     * @param ce
-     * @return
+     * Factory for a new ResourceLoader controlled by this controller
+     *
+     * @param <T> Type of the resource
+     * @param code function returning the new resource
+     * @return the resource loader loading the resource
      */
-    public <T> ResourceLoader<T> newLoarder(final NewResource<T> code) {
+    public <T> ResourceLoader<T> newLoader(final NewResource<T> code) {
         ResourceLoader<T> loader = new ResourceLoader<T>(code, this);
         allLoaders.add(loader);
         loader.start();

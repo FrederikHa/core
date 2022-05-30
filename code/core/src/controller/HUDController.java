@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import graphic.HUDPainter;
 import resourceLoading.ResourceController;
 
 public class HUDController extends AbstractController<HUDElement> {
+    private final HUDPainter painter;
+    private final SpriteBatch batch;
     private final ResourceController resourceController;
 
     private Stage textStage;
@@ -21,12 +24,21 @@ public class HUDController extends AbstractController<HUDElement> {
      *
      * @param batch the batch for the HUD
      */
-    public HUDController(SpriteBatch batch, ResourceController resourceController) {
+    public HUDController(
+            HUDPainter painter, SpriteBatch batch, ResourceController resourceController) {
+        this.painter = painter;
+        this.batch = batch;
         this.resourceController = resourceController;
         resourceController.runOnUIThread(
                 () -> {
                     textStage = new Stage(new ScreenViewport(), batch);
                 });
+    }
+
+    @Override
+    public boolean add(HUDElement t, ControllerLayer layer) {
+        t.setPainterAndBatch(painter, batch);
+        return super.add(t, layer);
     }
 
     /** Redraws the HUD and all HUD elements. */

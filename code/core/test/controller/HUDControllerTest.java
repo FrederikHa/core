@@ -1,6 +1,7 @@
 package controller;
 
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import graphic.HUDPainter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import resourceLoading.ResourceController;
 @PrepareForTest({HUDController.class})
 public class HUDControllerTest {
     private SpriteBatch batch;
+    private HUDPainter painter;
     private HUDElement element1;
     private HUDElement element2;
     private Stage textStage;
@@ -39,6 +42,7 @@ public class HUDControllerTest {
     @Before
     public void setUp() throws Exception {
         batch = Mockito.mock(SpriteBatch.class);
+        painter = Mockito.mock(HUDPainter.class);
         element1 = Mockito.mock(HUDElement.class);
         element2 = Mockito.mock(HUDElement.class);
         textStage = Mockito.mock(Stage.class);
@@ -47,9 +51,9 @@ public class HUDControllerTest {
         resourcesMock = Mockito.mock(ResourceController.class);
         PowerMockito.whenNew(Label.class).withAnyArguments().thenReturn(labelMock);
 
-        controller = new HUDController(batch, resourcesMock);
-
+        controller = new HUDController(painter, batch, resourcesMock);
         controllerSpy = Mockito.spy(controller);
+        doNothing().when(controllerSpy).update();
         labelMock = Mockito.mock(Label.class);
 
         Whitebox.setInternalState(Gdx.class, "files", Mockito.mock(Files.class));

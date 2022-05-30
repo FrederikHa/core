@@ -17,18 +17,18 @@ public abstract class ScreenController implements Screen {
      * The batch is necessary to draw ALL the stuff. Every object that uses draw need to know the
      * batch.
      */
-    protected SpriteBatch batch;
+    private SpriteBatch batch;
 
     protected EntityController entityController;
     private DungeonCamera camera;
     /** Draws objects */
-    protected Painter painter;
+    Painter painter;
     /** This batch is used to draw the HUD elements on it. */
-    protected SpriteBatch hudBatch;
+    private SpriteBatch hudBatch;
 
     protected HUDController hudController;
     /** Draws hud */
-    protected HUDPainter hudPainter;
+    private HUDPainter hudPainter;
 
     private boolean setup = false;
     private ResourceController resourceController;
@@ -68,10 +68,10 @@ public abstract class ScreenController implements Screen {
         this.hudBatch = hudBatch;
         this.camera = camera;
         this.resourceController = resourceController;
-        entityController = new EntityController();
         painter = new Painter(camera);
+        entityController = new EntityController(painter, batch);
         hudPainter = new HUDPainter();
-        hudController = new HUDController(hudBatch, resourceController);
+        hudController = new HUDController(hudPainter, hudBatch, resourceController);
         setup();
         setup = true;
     }

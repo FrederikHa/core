@@ -1,19 +1,11 @@
 package basiselements;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import tools.Point;
 
 public abstract class DungeonElement {
-    private SpriteBatch batch;
 
-    /**
-     * An object in the dungeon that can be drawn
-     *
-     * @param batch SpriteBatch to draw on
-     */
-    public DungeonElement(SpriteBatch batch) {
-        this.batch = batch;
-    }
+    /** An object in the dungeon that can be drawn */
+    public DungeonElement() {}
 
     /** Will be executed every frame. */
     public void update() {}
@@ -26,10 +18,6 @@ public abstract class DungeonElement {
      */
     public boolean removable() {
         return false;
-    }
-
-    public SpriteBatch getBatch() {
-        return batch;
     }
 
     /**

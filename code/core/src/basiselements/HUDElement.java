@@ -3,30 +3,27 @@ package basiselements;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import graphic.HUDPainter;
 
+/**
+ * A object that can be controlled by the <code>HUDController
+ * </code>.
+ */
 public abstract class HUDElement extends DungeonElement {
     private HUDPainter painter;
+    private SpriteBatch batch;
 
     /**
-     * A object that can be controlled by the <code>HUDController
-     * </code>.
-     *
      * @param painter Painter that draws this object
      * @param batch Batch to draw on
      */
-    public HUDElement(HUDPainter painter, SpriteBatch batch) {
-        super(batch);
+    public void setPainterAndBatch(HUDPainter painter, SpriteBatch batch) {
         this.painter = painter;
-    }
-
-    /** Each drawable should use this <code>Painter</code> to draw itself. */
-    public HUDPainter getPainter() {
-        return painter;
+        this.batch = batch;
     }
 
     /** Draws this instance on the batch. */
     @Override
     public void draw() {
-        getPainter().draw(getTexturePath(), getPosition(), getBatch());
+        painter.draw(getTexturePath(), getPosition(), batch);
     }
 
     /**
@@ -36,7 +33,6 @@ public abstract class HUDElement extends DungeonElement {
      * @param yScaling y-scale
      */
     public void drawWithScaling(float xScaling, float yScaling) {
-        getPainter()
-                .drawWithScaling(xScaling, yScaling, getTexturePath(), getPosition(), getBatch());
+        painter.drawWithScaling(xScaling, yScaling, getTexturePath(), getPosition(), batch);
     }
 }

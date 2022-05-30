@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import basiselements.Entity;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import graphic.Painter;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.Before;
@@ -20,19 +22,23 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({})
 public class EntityControllerTest {
+    private SpriteBatch batch;
+    private Painter painter;
     private Entity entity1, entity2;
     private EntityController controller;
 
     @Before
     public void setUp() {
+        batch = Mockito.mock(SpriteBatch.class);
+        painter = Mockito.mock(Painter.class);
         entity1 = Mockito.mock(Entity.class);
         entity2 = Mockito.mock(Entity.class);
-        controller = new EntityController();
+        controller = new EntityController(painter, batch);
     }
 
     @Test
     public void test_update_withEmptyController() {
-        EntityController ecSpy = Mockito.spy(new EntityController());
+        EntityController ecSpy = Mockito.spy(new EntityController(painter, batch));
         PowerMockito.doNothing().when(ecSpy).forEach(any());
         assumeTrue(ecSpy.isEmpty());
         verify(ecSpy).isEmpty();
